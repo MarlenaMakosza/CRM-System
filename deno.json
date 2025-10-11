@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "nodeModulesDir": "auto",
+  "imports": {
+    "@/": "./src/",
+    "@lib/": "./src/lib/",
+    "@components/": "./src/lib/components/"
+  },
+  "tasks": {
+    "dev": "deno run --allow-all --watch npm:@sveltejs/kit/vite dev",
+    "build": "deno run --allow-all npm:@sveltejs/kit/vite build",
+    "preview": "deno run --allow-all npm:@sveltejs/kit/vite preview",
+    "check": "deno run --allow-all npm:svelte-check --tsconfig ./tsconfig.json",
+    "db:generate": "deno run --allow-all npm:drizzle-kit generate",
+    "db:migrate": "deno run --allow-all npm:drizzle-kit migrate",
+    "db:push": "deno run --allow-all npm:drizzle-kit push",
+    "db:studio": "deno run --allow-all npm:drizzle-kit studio"
+  },
+  "lint": {
+    "include": ["src/"],
+    "exclude": ["node_modules/", "build/", ".svelte-kit/"],
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false,
+    "proseWrap": "preserve",
+    "include": ["src/"],
+    "exclude": ["node_modules/", "build/", ".svelte-kit/"]
+  }
+}
