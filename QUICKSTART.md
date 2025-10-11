@@ -2,10 +2,10 @@
 
 ## Prerequisites
 
-Before starting, make sure you have installed (see `docs/minimal-student/INSTALLATION.md`):
-- Deno 2.0+
-- Docker Desktop
-- VS Code (optional but recommended)
+Before starting, make sure you have installed:
+- **Node.js 18+** (https://nodejs.org/)
+- **Docker Desktop** (see `docs/minimal-student/INSTALLATION.md`)
+- **VS Code** (optional but recommended)
 
 ## 1. Start PostgreSQL
 
@@ -37,25 +37,25 @@ Edit `.env` and paste the generated string as `AUTH_SECRET`.
 ## 3. Install dependencies
 
 ```powershell
-deno install
+npm install
 ```
 
 ## 4. Run database migrations
 
 Generate migration files:
 ```powershell
-deno task db:generate
+npm run db:generate
 ```
 
 Apply migrations to database:
 ```powershell
-deno task db:migrate
+npm run db:migrate
 ```
 
 ## 5. Seed test users
 
 ```powershell
-deno run --allow-all src/lib/server/db/seed.ts
+npm run seed
 ```
 
 This creates 4 test users:
@@ -67,7 +67,7 @@ This creates 4 test users:
 ## 6. Start development server
 
 ```powershell
-deno task dev
+npm run dev
 ```
 
 Open browser at: http://localhost:5173
@@ -96,14 +96,15 @@ docker-compose up -d
 
 Kill the process using the port or change it in `vite.config.ts`.
 
-### Deno installation issues
+### Node.js installation issues
 
-Verify Deno is in PATH:
+Verify Node.js is installed:
 ```powershell
-deno --version
+node --version
+npm --version
 ```
 
-If not found, see `docs/minimal-student/INSTALLATION.md` step 1.3.
+If not found, download from https://nodejs.org/
 
 ---
 
