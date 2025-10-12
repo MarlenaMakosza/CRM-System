@@ -75,6 +75,10 @@
 - Adres* (automatycznie z leada, można zmienić)
 - Status: `PLANNED`
 
+**Walidacja:**
+- **Konflikt czasowy**: System nie pozwala zaplanować dwóch wizyt na tę samą datę i godzinę dla tego samego PH
+- Komunikat błędu: "Masz już zaplanowaną wizytę o tej godzinie"
+
 **Po wizycie:**
 - Status: `DONE` / `CANCELLED`
 - Notatka* - efekty rozmowy
