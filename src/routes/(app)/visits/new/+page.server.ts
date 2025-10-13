@@ -1,7 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { visits, leads } from "$lib/server/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ url, locals }) => {
@@ -99,6 +99,27 @@ export const actions: Actions = {
 
     // Combine date and time into timestamp
     const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`);
+
+    // Check for time conflicts (same user, same time, status PLANNED)
+    const conflictingVisits = await db
+      .select()
+      .from(visits)
+      .where(
+        and(
+          eq(visits.userId, user.id),
+          eq(visits.scheduledAt, scheduledAt),
+          eq(visits.status, "PLANNED")
+        )!
+      );
+
+    if (conflictingVisits.length > 0) {
+      return fail(400, {
+        error: "Masz już zaplanowaną wizytę o tej godzinie",
+        scheduledDate,
+        scheduledTime,
+        address,
+      });
+    }
 
     // Insert visit
     await db.insert(visits).values({
