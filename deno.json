@@ -1,6 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --watch backend/src/main.ts",
+    "dev": "deno run --allow-net --allow-env --watch backend/src/main.ts",
+    "seed": "deno run --allow-net --allow-env backend/src/seed.ts",
     "lint": "deno lint",
     "lint:fix": "deno lint --fix"
   },
@@ -11,8 +12,6 @@
     "strict": true
   },
   "lint": {
-    "files": {
-      "include": ["src"]
-    }
+    "include": ["backend/src"]
   }
 }
