@@ -13,4 +13,5 @@ app.use((ctx) => {
 
 const port = Number(Deno.env.get("PORT") ?? "8080");
 console.log(`Server running on http://localhost:${port}`);
+console.log(`Check health there -> http://localhost:${port}/health`);
 await app.listen({ port });
