@@ -38,6 +38,12 @@ clientsRouter.get("/", async (ctx) => {
 clientsRouter.get("/:id", async (ctx) => {
   const id = Number(ctx.params.id);
 
+  if (!Number.isInteger(id)) {
+    ctx.response.status = 400;
+    ctx.response.body = { error: "Invalid id" };
+    return;
+  }
+
   const raw = await sql`
     SELECT
       k.id,
@@ -59,27 +65,36 @@ clientsRouter.get("/:id", async (ctx) => {
     JOIN adres a ON k.adres_id = a.id
     JOIN status_klienta s ON k.status_klienta_id = s.id
     WHERE k.id = ${id}
+    LIMIT 1
   `;
 
-  const result = raw.map((row) => ({
-      id: row.id,
-      nip: row.nip,
-      nazwa_firmy: row.nazwa_firmy,
-      imie: row.imie,
-      nazwisko: row.nazwisko,
-      stanowisko: row.stanowisko,
-      email: row.email,
-      telefon: row.telefon,
-      status_kod: row.status_kod,
-      adres: {
-        ulica: row.ulica,
-        numer_budynku: row.numer_budynku,
-        numer_lokalu: row.numer_lokalu,
-        kod_pocztowy: row.kod_pocztowy,
-        miejscowosc: row.miejscowosc,
-        wojewodztwo: row.wojewodztwo,
-      }
-    }));
+  if (raw.length === 0) {
+    ctx.response.status = 404;
+    ctx.response.body = { error: "Client not found" };
+    return;
+  }
+
+  const row = raw[0];
+
+  const result = {
+    id: row.id,
+    nip: row.nip,
+    nazwa_firmy: row.nazwa_firmy,
+    imie: row.imie,
+    nazwisko: row.nazwisko,
+    stanowisko: row.stanowisko,
+    email: row.email,
+    telefon: row.telefon,
+    status_kod: row.status_kod,
+    adres: {
+      ulica: row.ulica,
+      numer_budynku: row.numer_budynku,
+      numer_lokalu: row.numer_lokalu,
+      kod_pocztowy: row.kod_pocztowy,
+      miejscowosc: row.miejscowosc,
+      wojewodztwo: row.wojewodztwo,
+    }
+  };
 
   ctx.response.body = result;
 });
