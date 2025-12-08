@@ -35,6 +35,55 @@ clientsRouter.get("/", async (ctx) => {
   ctx.response.body = rows;
 });
 
+clientsRouter.get("/:id", async (ctx) => {
+  const id = Number(ctx.params.id);
+
+  const raw = await sql`
+    SELECT
+      k.id,
+      k.nip,
+      k.nazwa_firmy,
+      k.imie,
+      k.nazwisko,
+      k.stanowisko,
+      k.email,
+      k.telefon,
+      s.kod AS status_kod,
+      a.ulica,
+      a.numer_budynku,
+      a.numer_lokalu,
+      a.kod_pocztowy,
+      a.miejscowosc,
+      a.wojewodztwo
+    FROM klient k
+    JOIN adres a ON k.adres_id = a.id
+    JOIN status_klienta s ON k.status_klienta_id = s.id
+    WHERE k.id = ${id}
+  `;
+
+  const result = raw.map((row) => ({
+      id: row.id,
+      nip: row.nip,
+      nazwa_firmy: row.nazwa_firmy,
+      imie: row.imie,
+      nazwisko: row.nazwisko,
+      stanowisko: row.stanowisko,
+      email: row.email,
+      telefon: row.telefon,
+      status_kod: row.status_kod,
+      adres: {
+        ulica: row.ulica,
+        numer_budynku: row.numer_budynku,
+        numer_lokalu: row.numer_lokalu,
+        kod_pocztowy: row.kod_pocztowy,
+        miejscowosc: row.miejscowosc,
+        wojewodztwo: row.wojewodztwo,
+      }
+    }));
+
+  ctx.response.body = result;
+});
+
 // POST /api/clients - dodanie klienta
 clientsRouter.post("/", async (ctx) => {
   const body = ctx.request.body({ type: "json" });
