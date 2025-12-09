@@ -105,16 +105,10 @@ clientsRouter.post("/", async (ctx) => {
     const body = ctx.request.body({ type: "json" });
     const data = await body.value as CreateClientRequest;
 
-    // walidacja pokraczna
+    // Walidacja wymaganych pól
     if (
-      !data.nip ||
-      !data.nazwa_firmy ||
-      !data.email ||
-      !data.status_kod ||
-      !data.adres ||
-      !data.adres.numer_budynku ||
-      !data.adres.kod_pocztowy ||
-      !data.adres.miejscowosc
+      !data.nip || !data.nazwa_firmy || !data.email || !data.status_kod ||
+      !data.adres
     ) {
       ctx.response.status = 400;
       ctx.response.body = { error: "Missing required fields" };
