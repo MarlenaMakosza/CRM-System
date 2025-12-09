@@ -1,8 +1,8 @@
 import {
   CreateClientRequest,
   UpdateClientRequest,
-} from "../Requests/CreateClientRequest.ts";
-import { ClientDetail, ClientListItem } from "../Types/clients.ts";
+} from "../requests/clientRequests.ts";
+import { ClientDetail, ClientListItem } from "../types/clients.ts";
 import { ClientRow } from "../dto/dto.ts";
 import * as clientRepo from "../repository/clientRepository.ts";
 import { getStatusId } from "../utils/database.ts";

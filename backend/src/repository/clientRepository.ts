@@ -1,5 +1,5 @@
 import { sql } from "db";
-import { ClientDetail, ClientListItem } from "../Types/clients.ts";
+import { ClientDetail, ClientListItem } from "../types/clients.ts";
 import * as Dto from "../dto/dto.ts";
 
 // ===== QUERIES =====

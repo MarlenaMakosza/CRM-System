@@ -2,7 +2,7 @@ import { sql } from "db";
 import {
   CreateClientRequest,
   UpdateClientRequest,
-} from "../Requests/CreateClientRequest.ts";
+} from "../requests/clientRequests.ts";
 
 // Custom error class
 export class ValidationError extends Error {
