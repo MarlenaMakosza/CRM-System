@@ -115,17 +115,14 @@ clientsRouter.post("/", async (ctx) => {
       return;
     }
 
-    // Walidacja czy NIP już istnieje
-    const existingClient = await sql`
-       SELECT id FROM klient WHERE nip = ${data.nip} LIMIT 1
-     `;
-    if (existingClient.length > 0) {
-      ctx.response.status = 409; // 409 Conflict
+    // Sprawdź czy NIP już istnieje
+    if (await checkNipExists(data.nip)) {
+      ctx.response.status = 409;
       ctx.response.body = { error: "Client with this NIP already exists" };
       return;
     }
 
-    // Walidacja NIP (10 cyfr)
+    // Walidacja formatów
     if (!/^\d{10}$/.test(data.nip)) {
       ctx.response.status = 400;
       ctx.response.body = { error: "NIP must be 10 digits" };
@@ -146,20 +143,14 @@ clientsRouter.post("/", async (ctx) => {
       return;
     }
 
-    // 1) status_klienta_id
-    const statusRows = await sql`
-    SELECT id FROM status_klienta
-    WHERE kod = ${data.status_kod}
-    LIMIT 1
-  `;
-    if (statusRows.length === 0) {
+    const statusId = await getStatusId(data.status_kod);
+    if (!statusId) {
       ctx.response.status = 400;
       ctx.response.body = { error: "Unknown status_kod" };
       return;
     }
-    const statusId = statusRows[0].id;
 
-    // 2) adres
+    // Wstaw adres
     const adresRows = await sql`
     INSERT INTO adres (
       ulica, numer_budynku, numer_lokalu,
@@ -266,12 +257,9 @@ clientsRouter.patch("/:id", async (ctx) => {
       adres,
     } = data;
 
-    // ✅ WALIDACJA: Jeśli zmienia NIP, sprawdź duplikat
+    // Jeśli zmienia NIP, sprawdź duplikat
     if (nip && nip !== current.nip) {
-      const existingClient = await sql`
-        SELECT id FROM klient WHERE nip = ${nip} AND id != ${id} LIMIT 1
-      `;
-      if (existingClient.length > 0) {
+      if (await checkNipExists(nip, id)) {
         ctx.response.status = 409;
         ctx.response.body = { error: "Client with this NIP already exists" };
         return;
@@ -281,17 +269,13 @@ clientsRouter.patch("/:id", async (ctx) => {
     // 3) Ustalenie nowego statusu (jeśli podano status_kod)
     let statusId = current.status_klienta_id;
     if (typeof status_kod === "string") {
-      const statusRows = await sql`
-        SELECT id FROM status_klienta
-        WHERE kod = ${status_kod}
-        LIMIT 1
-      `;
-      if (statusRows.length === 0) {
+      const newStatusId = await getStatusId(status_kod);
+      if (!newStatusId) {
         ctx.response.status = 400;
         ctx.response.body = { error: "Unknown status_kod" };
         return;
       }
-      statusId = statusRows[0].id;
+      statusId = newStatusId;
     }
 
     // 4) Zmergowane dane adresu
