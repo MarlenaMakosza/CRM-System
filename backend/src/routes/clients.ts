@@ -1,8 +1,13 @@
+import { sql } from "db";
 import { Router } from "oak";
-import { sql } from "../../../db/db.ts";
+import {
+  CreateClientRequest,
+  UpdateClientRequest,
+} from "../Requests/CreateClientRequest.ts";
 
 export const clientsRouter = new Router({ prefix: "/api/clients" });
 
+// ===== TYPY =====
 type ClientListItem = {
   id: number;
   nip: string;
@@ -14,9 +19,32 @@ type ClientListItem = {
   status_kod: string;
 };
 
+type Address = {
+  ulica: string;
+  numer_budynku: string;
+  numer_lokalu: string | null;
+  kod_pocztowy: string;
+  miejscowosc: string;
+  wojewodztwo: string;
+};
+
+type ClientDetail = {
+  id: number;
+  nip: string;
+  nazwa_firmy: string;
+  imie: string;
+  nazwisko: string;
+  stanowisko: string | null;
+  email: string;
+  telefon: string | null;
+  status_kod: string;
+  adres: Address;
+};
+
 // GET /api/clients  – lista klientów
 clientsRouter.get("/", async (ctx) => {
-  const rows = await sql<ClientListItem[]>`
+  try {
+    const clients = await sql<ClientListItem[]>`
     SELECT
       k.id,
       k.nip,
@@ -32,19 +60,21 @@ clientsRouter.get("/", async (ctx) => {
     ORDER BY k.created_at DESC
   `;
 
-  ctx.response.body = rows;
+    ctx.response.body = clients;
+    ctx.response.status = 200;
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to fetch clients" };
+  }
 });
 
 clientsRouter.get("/:id", async (ctx) => {
   const id = Number(ctx.params.id);
+  validateId(id);
 
-  if (!Number.isInteger(id)) {
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Invalid id" };
-    return;
-  }
-
-  const raw = await sql`
+  try {
+    const raw = await sql`
     SELECT
       k.id,
       k.nip,
@@ -68,272 +98,338 @@ clientsRouter.get("/:id", async (ctx) => {
     LIMIT 1
   `;
 
-  if (raw.length === 0) {
-    ctx.response.status = 404;
-    ctx.response.body = { error: "Client not found" };
-    return;
-  }
-
-  const row = raw[0];
-
-  const result = {
-    id: row.id,
-    nip: row.nip,
-    nazwa_firmy: row.nazwa_firmy,
-    imie: row.imie,
-    nazwisko: row.nazwisko,
-    stanowisko: row.stanowisko,
-    email: row.email,
-    telefon: row.telefon,
-    status_kod: row.status_kod,
-    adres: {
-      ulica: row.ulica,
-      numer_budynku: row.numer_budynku,
-      numer_lokalu: row.numer_lokalu,
-      kod_pocztowy: row.kod_pocztowy,
-      miejscowosc: row.miejscowosc,
-      wojewodztwo: row.wojewodztwo,
+    if (raw.length === 0) {
+      ctx.response.status = 404;
+      ctx.response.body = { error: "Client not found" };
+      return;
     }
-  };
 
-  ctx.response.body = result;
+    const row = raw[0];
+
+    const result: ClientDetail = {
+      id: row.id,
+      nip: row.nip,
+      nazwa_firmy: row.nazwa_firmy,
+      imie: row.imie,
+      nazwisko: row.nazwisko,
+      stanowisko: row.stanowisko,
+      email: row.email,
+      telefon: row.telefon,
+      status_kod: row.status_kod,
+      adres: {
+        ulica: row.ulica,
+        numer_budynku: row.numer_budynku,
+        numer_lokalu: row.numer_lokalu,
+        kod_pocztowy: row.kod_pocztowy,
+        miejscowosc: row.miejscowosc,
+        wojewodztwo: row.wojewodztwo,
+      },
+    };
+
+    ctx.response.body = result;
+    ctx.response.status = 200;
+  } catch (error) {
+    if (error instanceof Error && error.message === "Invalid ID") {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid ID" };
+    } else {
+      console.error("Error:", error);
+      ctx.response.status = 500;
+      ctx.response.body = { error: "Failed to fetch client" };
+    }
+  }
 });
 
 // POST /api/clients - dodanie klienta
 clientsRouter.post("/", async (ctx) => {
-  const body = ctx.request.body({ type: "json" });
-  const data = await body.value;
+  try {
+    const body = ctx.request.body({ type: "json" });
+    const data = await body.value as CreateClientRequest;
 
-  //destrukturyzacja, żeby nie pisać 20 razy const nip = data.nip
-  const {
-    nip,
-    nazwa_firmy,
-    imie,
-    nazwisko,
-    stanowisko,
-    email,
-    telefon,
-    status_kod,
-    adres,
-  } = data;
+    // walidacja pokraczna
+    if (
+      !data.nip ||
+      !data.nazwa_firmy ||
+      !data.email ||
+      !data.status_kod ||
+      !data.adres ||
+      !data.adres.numer_budynku ||
+      !data.adres.kod_pocztowy ||
+      !data.adres.miejscowosc
+    ) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Missing required fields" };
+      return;
+    }
 
-  // walidacja
-  if (
-    !nip || !nazwa_firmy || !email || !status_kod || !adres ||
-    !adres.numer_budynku || !adres.kod_pocztowy || !adres.miejscowosc
-  ) {
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Missing required fields" };
-    return;
-  }
+    // Walidacja czy NIP już istnieje
+    const existingClient = await sql`
+       SELECT id FROM klient WHERE nip = ${data.nip} LIMIT 1
+     `;
+    if (existingClient.length > 0) {
+      ctx.response.status = 409; // 409 Conflict
+      ctx.response.body = { error: "Client with this NIP already exists" };
+      return;
+    }
 
-  // 1) status_klienta_id
-  const statusRows = await sql`
+    // Walidacja NIP (10 cyfr)
+    if (!/^\d{10}$/.test(data.nip)) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "NIP must be 10 digits" };
+      return;
+    }
+
+    // Walidacja email (podstawowa)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid email format" };
+      return;
+    }
+
+    // Walidacja kodu pocztowego (XX-XXX)
+    if (!/^\d{2}-\d{3}$/.test(data.adres.kod_pocztowy)) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid postal code format (XX-XXX)" };
+      return;
+    }
+
+    // 1) status_klienta_id
+    const statusRows = await sql`
     SELECT id FROM status_klienta
-    WHERE kod = ${status_kod}
+    WHERE kod = ${data.status_kod}
     LIMIT 1
   `;
-  if (statusRows.length === 0) {
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Unknown status_kod" };
-    return;
-  }
-  const statusId = statusRows[0].id;
+    if (statusRows.length === 0) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Unknown status_kod" };
+      return;
+    }
+    const statusId = statusRows[0].id;
 
-  // 2) adres
-  const adresRows = await sql`
+    // 2) adres
+    const adresRows = await sql`
     INSERT INTO adres (
       ulica, numer_budynku, numer_lokalu,
       kod_pocztowy, miejscowosc, wojewodztwo
     )
     VALUES (
-      ${adres.ulica ?? null},
-      ${adres.numer_budynku},
-      ${adres.numer_lokalu ?? null},
-      ${adres.kod_pocztowy},
-      ${adres.miejscowosc},
-      ${adres.wojewodztwo ?? null}
+      ${data.adres.ulica ?? null},
+      ${data.adres.numer_budynku},
+      ${data.adres.numer_lokalu ?? null},
+      ${data.adres.kod_pocztowy},
+      ${data.adres.miejscowosc},
+      ${data.adres.wojewodztwo ?? null}
     )
     RETURNING id
   `;
-  const adresId = adresRows[0].id;
+    const adresId = adresRows[0].id;
 
-  // 3) klient
-  const klientRows = await sql`
+    // 3) klient
+    const clientRows = await sql`
     INSERT INTO klient (
       nip, nazwa_firmy, imie, nazwisko, stanowisko,
       email, telefon, adres_id, status_klienta_id
     )
     VALUES (
-      ${nip},
-      ${nazwa_firmy},
-      ${imie ?? null},
-      ${nazwisko ?? null},
-      ${stanowisko ?? null},
-      ${email},
-      ${telefon ?? null},
+      ${data.nip},
+      ${data.nazwa_firmy},
+      ${data.imie ?? null},
+      ${data.nazwisko ?? null},
+      ${data.stanowisko ?? null},
+      ${data.email},
+      ${data.telefon ?? null},
       ${adresId},
       ${statusId}
     )
     RETURNING *
   `;
 
-  ctx.response.status = 201;
-  ctx.response.body = klientRows[0];
+    ctx.response.body = clientRows[0];
+    ctx.response.status = 201;
+  } catch (error) {
+    console.error("Error creating client:", error);
+    ctx.response.status = 500;
+    ctx.response.body = { error: "Failed to create client" };
+  }
 });
-
 
 // PATCH /api/clients - zaaktualizowanie klienta
 clientsRouter.patch("/:id", async (ctx) => {
-  const idParam = ctx.params.id;
-  const id = Number(idParam);
+  try {
+    const id = Number(ctx.params.id);
+    validateId(id);
 
-  //walidacja id
-  if (!Number.isInteger(id)) {
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Invalid client id" };
-    return;
+    const body = ctx.request.body({ type: "json" });
+    const data = await body.value as UpdateClientRequest;
+
+    // Sprawdź czy body nie jest pusty
+    if (!data || Object.keys(data).length === 0) {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Empty body" };
+      return;
+    }
+
+    // 1) Pobierz aktualne dane klienta + adres
+    const rows = await sql`
+      SELECT
+        k.id,
+        k.nip,
+        k.nazwa_firmy,
+        k.imie,
+        k.nazwisko,
+        k.stanowisko,
+        k.email,
+        k.telefon,
+        k.status_klienta_id,
+        k.adres_id,
+        a.ulica,
+        a.numer_budynku,
+        a.numer_lokalu,
+        a.kod_pocztowy,
+        a.miejscowosc,
+        a.wojewodztwo
+      FROM klient k
+      JOIN adres a ON k.adres_id = a.id
+      WHERE k.id = ${id}
+      LIMIT 1
+    `;
+
+    if (rows.length === 0) {
+      ctx.response.status = 404;
+      ctx.response.body = { error: "Client not found" };
+      return;
+    }
+
+    const current = rows[0];
+
+    // 2) Wyciągamy z body to, co ewentualnie przyszło
+
+    // ✅ WALIDACJA: Jeśli zmienia NIP, sprawdź duplikat
+    if (data.nip && data.nip !== current.nip) {
+      const existingClient = await sql`
+        SELECT id FROM klient WHERE nip = ${data.nip} AND id != ${id} LIMIT 1
+      `;
+      if (existingClient.length > 0) {
+        ctx.response.status = 409;
+        ctx.response.body = { error: "Client with this NIP already exists" };
+        return;
+      }
+    }
+
+    // 3) Ustalenie nowego statusu (jeśli podano status_kod)
+    let statusId = current.status_klienta_id;
+    if (typeof data.status_kod === "string") {
+      const statusRows = await sql`
+        SELECT id FROM status_klienta
+        WHERE kod = ${data.status_kod}
+        LIMIT 1
+      `;
+      if (statusRows.length === 0) {
+        ctx.response.status = 400;
+        ctx.response.body = { error: "Unknown status_kod" };
+        return;
+      }
+      statusId = statusRows[0].id;
+    }
+
+    // 4) Zmergowane dane adresu
+    const mergedAddress = {
+      ulica: data.adres?.ulica ?? current.ulica,
+      numer_budynku: data.adres?.numer_budynku ?? current.numer_budynku,
+      numer_lokalu: data.adres?.numer_lokalu ?? current.numer_lokalu,
+      kod_pocztowy: data.adres?.kod_pocztowy ?? current.kod_pocztowy,
+      miejscowosc: data.adres?.miejscowosc ?? current.miejscowosc,
+      wojewodztwo: data.adres?.wojewodztwo ?? current.wojewodztwo,
+    };
+
+    // 5) Zmergowane dane klienta
+    const mergedClient = {
+      nip: data.nip ?? current.nip,
+      nazwa_firmy: data.nazwa_firmy ?? current.nazwa_firmy,
+      imie: data.imie ?? current.imie,
+      nazwisko: data.nazwisko ?? current.nazwisko,
+      stanowisko: data.stanowisko ?? current.stanowisko,
+      email: data.email ?? current.email,
+      telefon: data.telefon ?? current.telefon,
+    };
+
+    // 6) UPDATE adres
+    await sql`
+      UPDATE adres
+      SET
+        ulica = ${mergedAddress.ulica},
+        numer_budynku = ${mergedAddress.numer_budynku},
+        numer_lokalu = ${mergedAddress.numer_lokalu},
+        kod_pocztowy = ${mergedAddress.kod_pocztowy},
+        miejscowosc = ${mergedAddress.miejscowosc},
+        wojewodztwo = ${mergedAddress.wojewodztwo}
+      WHERE id = ${current.adres_id}
+    `;
+
+    // 7) UPDATE klienta + zwrot zaktualizowanego rekordu
+    const updatedClientRows = await sql`
+      UPDATE klient
+      SET
+        nip = ${mergedClient.nip},
+        nazwa_firmy = ${mergedClient.nazwa_firmy},
+        imie = ${mergedClient.imie},
+        nazwisko = ${mergedClient.nazwisko},
+        stanowisko = ${mergedClient.stanowisko},
+        email = ${mergedClient.email},
+        telefon = ${mergedClient.telefon},
+        status_klienta_id = ${statusId}
+      WHERE id = ${id}
+      RETURNING *
+    `;
+
+    ctx.response.body = updatedClientRows[0];
+    ctx.response.status = 200;
+  } catch (err) {
+    const error = err as Error;
+
+    if (error.message === "INVALID_ID") {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid ID" };
+    } else {
+      console.error("Error updating client:", error);
+      ctx.response.status = 500;
+      ctx.response.body = { error: "Failed to update client" };
+    }
   }
-
-  const body = ctx.request.body({ type: "json" });
-  const data = await body.value;
-
-  if (!data || Object.keys(data).length === 0) {
-    ctx.response.status = 400;
-    ctx.response.body = { error: "Empty body" };
-    return;
-  }
-  // 1) Pobierz aktualne dane klienta + adres
-   const rows = await sql`
-     SELECT
-       k.id,
-       k.nip,
-       k.nazwa_firmy,
-       k.imie,
-       k.nazwisko,
-       k.stanowisko,
-       k.email,
-       k.telefon,
-       k.status_klienta_id,
-       k.adres_id,
-       a.ulica,
-       a.numer_budynku,
-       a.numer_lokalu,
-       a.kod_pocztowy,
-       a.miejscowosc,
-       a.wojewodztwo
-     FROM klient k
-     JOIN adres a ON k.adres_id = a.id
-     WHERE k.id = ${id}
-     LIMIT 1
-   `;
-
-   if (rows.length === 0) {
-     ctx.response.status = 404;
-     ctx.response.body = { error: "Client not found" };
-     return;
-   }
-
-   const current = rows[0];
-
-   // 2) Wyciągamy z body to, co ewentualnie przyszło
-   const {
-     nip,
-     nazwa_firmy,
-     imie,
-     nazwisko,
-     stanowisko,
-     email,
-     telefon,
-     status_kod,
-     adres,
-   } = data;
-
-   // 3) Ustalenie nowego statusu (jeśli podano status_kod)
-   let statusId = current.status_klienta_id;
-
-   if (typeof status_kod === "string") {
-     const statusRows = await sql`
-       SELECT id FROM status_klienta
-       WHERE kod = ${status_kod}
-       LIMIT 1
-     `;
-     if (statusRows.length === 0) {
-       ctx.response.status = 400;
-       ctx.response.body = { error: "Unknown status_kod" };
-       return;
-     }
-     statusId = statusRows[0].id;
-   }
-
-   // 4) Zmergowane dane adresu
-   const mergedAddress = {
-     ulica:       adres?.ulica           ?? current.ulica,
-     numer_budynku: adres?.numer_budynku ?? current.numer_budynku,
-     numer_lokalu:  adres?.numer_lokalu  ?? current.numer_lokalu,
-     kod_pocztowy:  adres?.kod_pocztowy  ?? current.kod_pocztowy,
-     miejscowosc:   adres?.miejscowosc   ?? current.miejscowosc,
-     wojewodztwo:   adres?.wojewodztwo   ?? current.wojewodztwo,
-   };
-
-   // 5) Zmergowane dane klienta
-   const mergedClient = {
-     nip:         nip         ?? current.nip,
-     nazwa_firmy: nazwa_firmy ?? current.nazwa_firmy,
-     imie:        imie        ?? current.imie,
-     nazwisko:    nazwisko    ?? current.nazwisko,
-     stanowisko:  stanowisko  ?? current.stanowisko,
-     email:       email       ?? current.email,
-     telefon:     telefon     ?? current.telefon,
-   };
-
-   // 6) UPDATE adres
-   await sql`
-     UPDATE adres
-     SET
-       ulica = ${mergedAddress.ulica},
-       numer_budynku = ${mergedAddress.numer_budynku},
-       numer_lokalu = ${mergedAddress.numer_lokalu},
-       kod_pocztowy = ${mergedAddress.kod_pocztowy},
-       miejscowosc = ${mergedAddress.miejscowosc},
-       wojewodztwo = ${mergedAddress.wojewodztwo}
-     WHERE id = ${current.adres_id}
-   `;
-
-   // 7) UPDATE klienta + zwrot zaktualizowanego rekordu
-   const updatedClientRows = await sql`
-     UPDATE klient
-     SET
-       nip = ${mergedClient.nip},
-       nazwa_firmy = ${mergedClient.nazwa_firmy},
-       imie = ${mergedClient.imie},
-       nazwisko = ${mergedClient.nazwisko},
-       stanowisko = ${mergedClient.stanowisko},
-       email = ${mergedClient.email},
-       telefon = ${mergedClient.telefon},
-       status_klienta_id = ${statusId}
-     WHERE id = ${id}
-     RETURNING *
-   `;
-
-   ctx.response.status = 200;
-   ctx.response.body = updatedClientRows[0];
 });
 
 // DELETE /api/clients  – usunięcie
 clientsRouter.delete("/:id", async (ctx) => {
   const id = Number(ctx.params.id);
+  validateId(id);
 
-  const result = await sql`
-    DELETE FROM klient WHERE id = ${id}
-    RETURNING id
-  `;
+  try {
+    const result = await sql`
+      DELETE FROM klient WHERE id = ${id}
+      RETURNING id
+    `;
 
-  if (result.length === 0) {
-    ctx.response.status = 404;
-    ctx.response.body = { error: "Client not found" };
-    return;
+    if (result.length === 0) {
+      ctx.response.status = 404;
+      ctx.response.body = { error: "Client not found" };
+      return;
+    }
+
+    ctx.response.status = 204;
+  } catch (error) {
+    if (error instanceof Error && error.message === "Invalid ID") {
+      ctx.response.status = 400;
+      ctx.response.body = { error: "Invalid ID" };
+    } else {
+      console.error("Error:", error);
+      ctx.response.status = 500;
+      ctx.response.body = { error: "Failed to fetch client" };
+    }
   }
-
-  ctx.response.status = 204;
 });
+
+function validateId(id: number) {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid ID");
+  }
+}
