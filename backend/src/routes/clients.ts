@@ -36,34 +36,35 @@ clientsRouter.get("/", async (ctx) => {
   }
 });
 
+// GET /api/clients/:id - pobranie klienta
 clientsRouter.get("/:id", async (ctx) => {
-  const id = Number(ctx.params.id);
-  validateId(id);
-
   try {
+    const id = Number(ctx.params.id);
+    validateId(id);
+
     const raw = await sql`
-    SELECT
-      k.id,
-      k.nip,
-      k.nazwa_firmy,
-      k.imie,
-      k.nazwisko,
-      k.stanowisko,
-      k.email,
-      k.telefon,
-      s.kod AS status_kod,
-      a.ulica,
-      a.numer_budynku,
-      a.numer_lokalu,
-      a.kod_pocztowy,
-      a.miejscowosc,
-      a.wojewodztwo
-    FROM klient k
-    JOIN adres a ON k.adres_id = a.id
-    JOIN status_klienta s ON k.status_klienta_id = s.id
-    WHERE k.id = ${id}
-    LIMIT 1
-  `;
+      SELECT
+        k.id,
+        k.nip,
+        k.nazwa_firmy,
+        k.imie,
+        k.nazwisko,
+        k.stanowisko,
+        k.email,
+        k.telefon,
+        s.kod AS status_kod,
+        a.ulica,
+        a.numer_budynku,
+        a.numer_lokalu,
+        a.kod_pocztowy,
+        a.miejscowosc,
+        a.wojewodztwo
+      FROM klient k
+      JOIN adres a ON k.adres_id = a.id
+      JOIN status_klienta s ON k.status_klienta_id = s.id
+      WHERE k.id = ${id}
+      LIMIT 1
+    `;
 
     if (raw.length === 0) {
       ctx.response.status = 404;
