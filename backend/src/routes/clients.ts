@@ -1,5 +1,5 @@
 import { sql } from "db";
-import { Router } from "oak";
+import { Context, Router } from "oak";
 import {
   CreateClientRequest,
   UpdateClientRequest,
@@ -30,9 +30,7 @@ clientsRouter.get("/", async (ctx) => {
     ctx.response.body = clients;
     ctx.response.status = 200;
   } catch (error) {
-    console.error("Error fetching clients:", error);
-    ctx.response.status = 500;
-    ctx.response.body = { error: "Failed to fetch clients" };
+    handleError(ctx, error);
   }
 });
 
