@@ -5,6 +5,13 @@ import {
   UpdateClientRequest,
 } from "../Requests/CreateClientRequest.ts";
 import { ClientDetail, ClientListItem } from "../Types/clients.ts";
+import {
+  validateClientForCreation,
+  validateClientForUpdate,
+  validateId,
+  ValidationError,
+} from "../utils/validation.ts";
+import { getStatusId } from "../utils/database.ts";
 
 export const clientsRouter = new Router({ prefix: "/api/clients" });
 
@@ -105,50 +112,11 @@ clientsRouter.post("/", async (ctx) => {
     const body = ctx.request.body({ type: "json" });
     const data = await body.value as CreateClientRequest;
 
-    // Walidacja wymaganych pól
-    if (
-      !data.nip || !data.nazwa_firmy || !data.email || !data.status_kod ||
-      !data.adres
-    ) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Missing required fields" };
-      return;
-    }
+    // Cała walidacja
+    await validateClientForCreation(data);
 
-    // Sprawdź czy NIP już istnieje
-    if (await checkNipExists(data.nip)) {
-      ctx.response.status = 409;
-      ctx.response.body = { error: "Client with this NIP already exists" };
-      return;
-    }
-
-    // Walidacja formatów
-    if (!/^\d{10}$/.test(data.nip)) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "NIP must be 10 digits" };
-      return;
-    }
-
-    // Walidacja email (podstawowa)
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Invalid email format" };
-      return;
-    }
-
-    // Walidacja kodu pocztowego (XX-XXX)
-    if (!/^\d{2}-\d{3}$/.test(data.adres.kod_pocztowy)) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Invalid postal code format (XX-XXX)" };
-      return;
-    }
-
-    const statusId = await getStatusId(data.status_kod);
-    if (!statusId) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Unknown status_kod" };
-      return;
-    }
+    // Pobierz status_id (wiemy że istnieje)
+    const statusId = (await getStatusId(data.status_kod))!;
 
     // Wstaw adres
     const adresRows = await sql`
@@ -204,14 +172,7 @@ clientsRouter.patch("/:id", async (ctx) => {
     const body = ctx.request.body({ type: "json" });
     const data = await body.value as UpdateClientRequest;
 
-    // Sprawdź czy body nie jest pusty
-    if (!data || Object.keys(data).length === 0) {
-      ctx.response.status = 400;
-      ctx.response.body = { error: "Empty body" };
-      return;
-    }
-
-    // 1) Pobierz aktualne dane klienta + adres
+    // Pobierz aktualne dane
     const rows = await sql`
       SELECT
         k.id,
@@ -244,59 +205,33 @@ clientsRouter.patch("/:id", async (ctx) => {
 
     const current = rows[0];
 
-    // 2) Wyciągamy z body to, co ewentualnie przyszło
-    const {
-      nip,
-      nazwa_firmy,
-      imie,
-      nazwisko,
-      stanowisko,
-      email,
-      telefon,
-      status_kod,
-      adres,
-    } = data;
+    // Cała walidacja
+    await validateClientForUpdate(data, current.nip, id);
 
-    // Jeśli zmienia NIP, sprawdź duplikat
-    if (nip && nip !== current.nip) {
-      if (await checkNipExists(nip, id)) {
-        ctx.response.status = 409;
-        ctx.response.body = { error: "Client with this NIP already exists" };
-        return;
-      }
-    }
-
-    // 3) Ustalenie nowego statusu (jeśli podano status_kod)
+    // Ustal status
     let statusId = current.status_klienta_id;
-    if (typeof status_kod === "string") {
-      const newStatusId = await getStatusId(status_kod);
-      if (!newStatusId) {
-        ctx.response.status = 400;
-        ctx.response.body = { error: "Unknown status_kod" };
-        return;
-      }
-      statusId = newStatusId;
+    if (data.status_kod) {
+      statusId = (await getStatusId(data.status_kod))!;
     }
 
-    // 4) Zmergowane dane adresu
+    // Merge danych
     const mergedAddress = {
-      ulica: adres?.ulica ?? current.ulica,
-      numer_budynku: adres?.numer_budynku ?? current.numer_budynku,
-      numer_lokalu: adres?.numer_lokalu ?? current.numer_lokalu,
-      kod_pocztowy: adres?.kod_pocztowy ?? current.kod_pocztowy,
-      miejscowosc: adres?.miejscowosc ?? current.miejscowosc,
-      wojewodztwo: adres?.wojewodztwo ?? current.wojewodztwo,
+      ulica: data.adres?.ulica ?? current.ulica,
+      numer_budynku: data.adres?.numer_budynku ?? current.numer_budynku,
+      numer_lokalu: data.adres?.numer_lokalu ?? current.numer_lokalu,
+      kod_pocztowy: data.adres?.kod_pocztowy ?? current.kod_pocztowy,
+      miejscowosc: data.adres?.miejscowosc ?? current.miejscowosc,
+      wojewodztwo: data.adres?.wojewodztwo ?? current.wojewodztwo,
     };
 
-    // 5) Zmergowane dane klienta
     const mergedClient = {
-      nip: nip ?? current.nip,
-      nazwa_firmy: nazwa_firmy ?? current.nazwa_firmy,
-      imie: imie ?? current.imie,
-      nazwisko: nazwisko ?? current.nazwisko,
-      stanowisko: stanowisko ?? current.stanowisko,
-      email: email ?? current.email,
-      telefon: telefon ?? current.telefon,
+      nip: data.nip ?? current.nip,
+      nazwa_firmy: data.nazwa_firmy ?? current.nazwa_firmy,
+      imie: data.imie ?? current.imie,
+      nazwisko: data.nazwisko ?? current.nazwisko,
+      stanowisko: data.stanowisko ?? current.stanowisko,
+      email: data.email ?? current.email,
+      telefon: data.telefon ?? current.telefon,
     };
 
     // 6) UPDATE adres
@@ -358,42 +293,11 @@ clientsRouter.delete("/:id", async (ctx) => {
   }
 });
 
-// ===== HELPER FUNCTIONS =====
-
-function validateId(id: number): void {
-  if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid ID");
-  }
-}
-
-async function getStatusId(status_kod: string): Promise<number | null> {
-  const statusRows = await sql`
-    SELECT id FROM status_klienta
-    WHERE kod = ${status_kod}
-    LIMIT 1
-  `;
-  return statusRows.length > 0 ? statusRows[0].id : null;
-}
-
-async function checkNipExists(
-  nip: string,
-  excludeId?: number,
-): Promise<boolean> {
-  if (excludeId) {
-    const result = await sql`
-      SELECT id FROM klient WHERE nip = ${nip} AND id != ${excludeId} LIMIT 1
-    `;
-    return result.length > 0;
-  }
-
-  const result = await sql`
-    SELECT id FROM klient WHERE nip = ${nip} LIMIT 1
-  `;
-  return result.length > 0;
-}
-
 function handleError(ctx: Context, error: unknown): void {
-  if (error instanceof Error && error.message === "Invalid ID") {
+  if (error instanceof ValidationError) {
+    ctx.response.status = error.statusCode;
+    ctx.response.body = { error: error.message };
+  } else if (error instanceof Error && error.message === "Invalid ID") {
     ctx.response.status = 400;
     ctx.response.body = { error: "Invalid ID" };
   } else {
