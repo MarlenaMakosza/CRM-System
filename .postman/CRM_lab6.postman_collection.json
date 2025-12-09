@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "92672c67-09f5-4d25-85d0-2f6f79eaf8f7",
+		"name": "CRM_lab6",
+		"description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50625978",
+		"_collection_link": "https://marlenamakosza-c10cbfd0-7376565.postman.co/workspace/Marlena-M%C4%85kosza's-Workspace~17721b7a-7d90-46c3-8002-f313e6abbcbd/collection/50625978-92672c67-09f5-4d25-85d0-2f6f79eaf8f7?action=share&source=collection_link&creator=50625978"
+	},
+	"item": [
+		{
+			"name": "Healthcheck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/health",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"health"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Get clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{url}}/api/clients",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": [
+				{
+					"name": "Get clients",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{url}}/api/clients",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "content-type",
+							"value": "application/json; charset=UTF-8"
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "content-encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "content-length",
+							"value": "314"
+						},
+						{
+							"key": "date",
+							"value": "Mon, 08 Dec 2025 21:08:51 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 7,\n        \"nip\": \"3213213213\",\n        \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n        \"email\": \"ania@sklep.pl\",\n        \"telefon\": \"600700800\",\n        \"miejscowosc\": \"Poznań\",\n        \"kod_pocztowy\": \"60-100\",\n        \"status_kod\": \"PROSPEKT\"\n    },\n    {\n        \"id\": 6,\n        \"nip\": \"2222222222\",\n        \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n        \"email\": \"ania@sklep.pl\",\n        \"telefon\": \"600700800\",\n        \"miejscowosc\": \"Poznań\",\n        \"kod_pocztowy\": \"60-100\",\n        \"status_kod\": \"PROSPEKT\"\n    },\n    {\n        \"id\": 5,\n        \"nip\": \"1231231231\",\n        \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n        \"email\": \"ania@sklep.pl\",\n        \"telefon\": \"600700800\",\n        \"miejscowosc\": \"Poznań\",\n        \"kod_pocztowy\": \"60-100\",\n        \"status_kod\": \"PROSPEKT\"\n    },\n    {\n        \"id\": 3,\n        \"nip\": \"9876543210\",\n        \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n        \"email\": \"ania@sklep.pl\",\n        \"telefon\": \"600700800\",\n        \"miejscowosc\": \"Poznań\",\n        \"kod_pocztowy\": \"60-100\",\n        \"status_kod\": \"PROSPEKT\"\n    },\n    {\n        \"id\": 1,\n        \"nip\": \"1234567890\",\n        \"nazwa_firmy\": \"Warzywniak Marlenki\",\n        \"email\": \"kontakt@warzywniak.pl\",\n        \"telefon\": \"123456789\",\n        \"miejscowosc\": \"Zielona Góra\",\n        \"kod_pocztowy\": \"65-100\",\n        \"status_kod\": \"AKTYWNY\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{url}}/api/clients/-1",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"-1"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Add clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nip\": \"3213213211\",\n    \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n    \"imie\": \"Anna\",\n    \"nazwisko\": \"Nowak\",\n    \"stanowisko\": \"Właściciel\",\n    \"email\": \"ania@sklep.pl\",\n    \"telefon\": \"600700800\",\n    \"status_kod\": \"PROSPEKT\",\n    \"adres\": {\n        \"ulica\": \"Kwiatowa\",\n        \"numer_budynku\": \"5\",\n        \"numer_lokalu\": \"2\",\n        \"kod_pocztowy\": \"60-100\",\n        \"miejscowosc\": \"Poznań\",\n        \"wojewodztwo\": \"Wielkopolskie\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/clients",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": [
+				{
+					"name": "Post data",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nip\": \"3213213213\",\n    \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n    \"imie\": \"Anna\",\n    \"nazwisko\": \"Nowak\",\n    \"stanowisko\": \"Właściciel\",\n    \"email\": \"ania@sklep.pl\",\n    \"telefon\": \"600700800\",\n    \"status_kod\": \"PROSPEKT\",\n    \"adres\": {\n        \"ulica\": \"Kwiatowa\",\n        \"numer_budynku\": \"5\",\n        \"numer_lokalu\": \"2\",\n        \"kod_pocztowy\": \"60-100\",\n        \"miejscowosc\": \"Poznań\",\n        \"wojewodztwo\": \"Wielkopolskie\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{url}}/api/clients",
+							"protocol": "http",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"clients"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "content-type",
+							"value": "application/json; charset=UTF-8"
+						},
+						{
+							"key": "vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "content-encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "content-length",
+							"value": "238"
+						},
+						{
+							"key": "date",
+							"value": "Mon, 08 Dec 2025 21:08:46 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 7,\n    \"nip\": \"3213213213\",\n    \"nazwa_firmy\": \"Sklep Warzywny Ania\",\n    \"imie\": \"Anna\",\n    \"nazwisko\": \"Nowak\",\n    \"stanowisko\": \"Właściciel\",\n    \"email\": \"ania@sklep.pl\",\n    \"telefon\": \"600700800\",\n    \"adres_id\": 8,\n    \"status_klienta_id\": 1,\n    \"created_at\": \"2025-12-08T20:08:46.393Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"nowy@firma.pl\",\n  \"nazwa_firmy\": \"Nowa Nazwa Sp. z o.o.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/clients/2",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"2"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Update clients Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{url}}/api/clients/2",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"2"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		}
+	]
+}
