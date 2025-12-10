@@ -38,15 +38,16 @@ async function checkNipExists(
 }
 
 // Pobierz status_id po kodzie
-async function getStatusId(status_kod: string): Promise<number | null> {
+async function getStatusId(status_kod: string): Promise<number> {
   const statusRows = await sql`
     SELECT id FROM status_klienta
     WHERE kod = ${status_kod}
     LIMIT 1
   `;
-  return statusRows.length > 0 ? statusRows[0].id : null;
+  return statusRows.length > 0 ? statusRows[0].id : 0;
 }
 
+//TODO Nazwy do dupy - patrz na logikę biznesową
 // Walidacja formatów dla CreateClientRequest
 function validateCreateClientRequest(data: CreateClientRequest): void {
   // Wymagane pola
@@ -59,7 +60,7 @@ function validateCreateClientRequest(data: CreateClientRequest): void {
 
   // Format NIP (10 cyfr)
   if (!/^\d{10}$/.test(data.nip)) {
-    throw new ValidationError("NIP must be 10 digits");
+    throw new ValidationError("NIP must be 10 digits long");
   }
 
   // Format email
