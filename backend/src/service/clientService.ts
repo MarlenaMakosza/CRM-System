@@ -1,49 +1,47 @@
-import {
-  CreateClientRequest,
-  UpdateClientRequest,
-} from "../requests/clientRequests.ts";
-import { ClientDetail, ClientListItem } from "../types/clients.ts";
 import { ClientRow } from "../dto/dto.ts";
 import * as clientRepo from "../repository/clientRepository.ts";
+import { UpdateClientRequest } from "../requests/clientRequests.ts";
+
+import { Client } from "../types/index.ts";
 import { getStatusId } from "../utils/database.ts";
 import {
   validateClientForCreation,
   validateClientForUpdate,
 } from "../utils/validation.ts";
 
-export function listAllClients(): Promise<ClientListItem[]> {
+export function listAllClients(): Promise<Client[]> {
   return clientRepo.getAllClients();
 }
 
-export async function getClientDetails(
+export function getClientDetails(
   id: number,
-): Promise<ClientDetail | null> {
-  return await clientRepo.getClientById(id);
+): Promise<Client> {
+  return clientRepo.getClientById(id);
 }
 
 export async function createNewClient(
-  data: CreateClientRequest,
+  request: Client,
 ): Promise<ClientRow> {
-  await validateClientForCreation(data);
+  await validateClientForCreation(request);
 
-  const statusId : number = await getStatusId(data.status_kod);
+  const statusId: number = await getStatusId(request.status_kod);
   //TODO Enumy i tak dalej
-  if (statusId==0) {
+  if (statusId == 0) {
     throw new Error("Status not found");
   }
 
-  const adresId = await clientRepo.createAddress(data.adres);
+  const adresId = await clientRepo.createAddress(request.adres);
 
   const newClient = await clientRepo.createClient({
-    nip: data.nip,
-    nazwa_firmy: data.nazwa_firmy,
-    imie: data.imie,
-    nazwisko: data.nazwisko,
-    stanowisko: data.stanowisko,
-    email: data.email,
-    telefon: data.telefon,
+    nip: request.nip,
+    nazwa_firmy: request.nazwa_firmy,
+    imie: request.imie,
+    nazwisko: request.nazwisko,
+    stanowisko: request.stanowisko,
+    email: request.email,
+    telefon: request.telefon,
     adres_id: adresId,
-    status_klienta_id: statusId
+    status_klienta_id: statusId,
   });
 
   return newClient;
