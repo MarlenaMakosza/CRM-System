@@ -1,3 +1,5 @@
+# Co robi dana funkcja krótkie max (podobno mam z tym problem)
+
 # Dopracować clients
 
 * Typy

@@ -1,5 +1,7 @@
 import { type Address } from "./common.ts";
 
+// TODO pomyśl czy typy, a dto to nie to samo?
+
 export type ClientListItem = {
   id: number;
   nip: string;
