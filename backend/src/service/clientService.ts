@@ -11,8 +11,8 @@ import {
   validateClientForUpdate,
 } from "../utils/validation.ts";
 
-export async function listAllClients(): Promise<ClientListItem[]> {
-  return await clientRepo.getAllClients();
+export function listAllClients(): Promise<ClientListItem[]> {
+  return clientRepo.getAllClients();
 }
 
 export async function getClientDetails(
@@ -26,8 +26,9 @@ export async function createNewClient(
 ): Promise<ClientRow> {
   await validateClientForCreation(data);
 
-  const statusId = await getStatusId(data.status_kod);
-  if (!statusId) {
+  const statusId : number = await getStatusId(data.status_kod);
+  //TODO Enumy i tak dalej
+  if (statusId==0) {
     throw new Error("Status not found");
   }
 
@@ -42,7 +43,7 @@ export async function createNewClient(
     email: data.email,
     telefon: data.telefon,
     adres_id: adresId,
-    status_klienta_id: statusId,
+    status_klienta_id: statusId
   });
 
   return newClient;
