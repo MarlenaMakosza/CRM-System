@@ -22,9 +22,9 @@ CREATE TABLE klient (
   id          SERIAL PRIMARY KEY,
   nip         VARCHAR(10) NOT NULL UNIQUE,
   nazwa_firmy VARCHAR(200) NOT NULL,
-  imie        VARCHAR(100),  -- osoby decyzyjnej
-  nazwisko    VARCHAR(100),  -- osoby decyzyjnej
-  stanowisko  VARCHAR(100),  -- np. 'właściciel', 'kierownik zakupów'
+  imie        VARCHAR(100) NOT NULL,
+  nazwisko    VARCHAR(100) NOT NULL,
+  stanowisko  VARCHAR(100) NOT NULL,
   email       VARCHAR(255) NOT NULL,
   telefon     VARCHAR(30),
   adres_id    INTEGER NOT NULL REFERENCES adres(id),
@@ -37,18 +37,17 @@ CREATE TABLE klient (
 
 CREATE TABLE region (
   id SERIAL PRIMARY KEY,
-  nazwa VARCHAR(100) NOT NULL UNIQUE, -- 'Poznań', 'Szczecin', 'Wrocław'
-  wojewodztwo VARCHAR(50)
+  nazwa VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE przedstawiciel_handlowy (
   id          SERIAL PRIMARY KEY,
   imie        VARCHAR(100) NOT NULL,
   nazwisko    VARCHAR(100) NOT NULL,
-  email       VARCHAR(255),
-  telefon     VARCHAR(30),
+  email       VARCHAR(255) NOT NULL,
+  telefon     VARCHAR(30) NOT NULL,
   region_id   INTEGER NOT NULL REFERENCES region(id),
-  data_zatrudnienia DATE,
+  data_zatrudnienia DATE NOT NULL,
   aktywny     BOOLEAN DEFAULT TRUE,
 
   CONSTRAINT fk_przedst_region FOREIGN KEY (region_id) REFERENCES region(id)
@@ -68,7 +67,7 @@ CREATE TABLE produkt (
   id      SERIAL PRIMARY KEY,
   nazwa   VARCHAR(100) NOT NULL,
   opis    TEXT,
-  cena    NUMERIC(12,2) -- cena jednostkowa
+  cena    NUMERIC(12,2) NOT NULL -- cena jednostkowa
 );
 
 CREATE TABLE umowa (
