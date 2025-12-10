@@ -2,13 +2,13 @@
 
 CREATE TABLE adres (
   id SERIAL PRIMARY KEY,
-  ulica VARCHAR(200),
+  ulica VARCHAR(200) NOT NULL,
   numer_budynku VARCHAR(20) NOT NULL,
   numer_lokalu VARCHAR(20),
   kod_pocztowy CHAR(6) NOT NULL,
   miejscowosc VARCHAR(100) NOT NULL,
-  wojewodztwo VARCHAR(50),
-  
+  wojewodztwo VARCHAR(50) NOT NULL,
+
   CONSTRAINT check_kod_pocztowy CHECK (kod_pocztowy ~ '^\d{2}-\d{3}$')
 );
 
@@ -76,7 +76,7 @@ CREATE TABLE umowa (
   klient_id       INTEGER NOT NULL REFERENCES klient(id) ON DELETE CASCADE,
   typ_id          INTEGER NOT NULL REFERENCES typ_umowy(id),
   przedstawiciel_id INTEGER NOT NULL REFERENCES przedstawiciel_handlowy(id),
-  
+
   status          VARCHAR(50) NOT NULL,
   data_od         DATE NOT NULL,
   data_do         DATE,
@@ -96,13 +96,13 @@ CREATE TABLE zdarzenie (
   przedstawiciel_id  INTEGER NOT NULL REFERENCES przedstawiciel_handlowy(id),
   typ_id             INTEGER NOT NULL REFERENCES typ_zdarzenia(id),
   umowa_id           INTEGER REFERENCES umowa(id),
-  
+
   -- Dla planowania:
-  data_planowana     TIMESTAMP, 
+  data_planowana     TIMESTAMP,
   data_realizacji    TIMESTAMP,
-  
+
   status             VARCHAR(50) DEFAULT 'zaplanowane', -- 'zaplanowane', 'zrealizowane', 'odwołane'
-  
+
   -- Notatki (np. konkurencji):
   opis               TEXT,
   notatki            TEXT,
@@ -122,7 +122,7 @@ CREATE TABLE pozycja_umowy (
   jednostka  VARCHAR(20) NOT NULL, -- 'kg', 'szt', 'opakowanie'
   cena_jednostkowa NUMERIC(12,2) NOT NULL, -- cena w momencie podpisania umowy
   wartosc    NUMERIC(14,2) GENERATED ALWAYS AS (ilosc * cena_jednostkowa) STORED,
-  
+
   CONSTRAINT fk_pozycja_umowa FOREIGN KEY (umowa_id) REFERENCES umowa(id),
   CONSTRAINT fk_pozycja_produkt FOREIGN KEY (produkt_id) REFERENCES produkt(id),
   CONSTRAINT check_ilosc_positive CHECK (ilosc > 0)
