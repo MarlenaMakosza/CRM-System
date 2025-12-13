@@ -1,7 +1,7 @@
 import { Router } from "oak";
 import * as clientService from "../service/clientService.ts";
 import { handleError } from "../utils/errorHandler.ts";
-import { validateId } from "../utils/validation.ts";
+// import { validateId } from "../utils/validation.ts";
 export const clientsRouter = new Router({ prefix: "/api/clients" });
 
 // ===== ENDPOINTS =====
@@ -9,7 +9,7 @@ export const clientsRouter = new Router({ prefix: "/api/clients" });
 // GET /api/clients – lista klientów
 clientsRouter.get("/", async (ctx) => {
   try {
-    const clients = await clientService.listAllClients();
+    const clients = await clientService.listClients();
     ctx.response.body = clients;
     ctx.response.status = 200;
   } catch (error) {
@@ -17,83 +17,83 @@ clientsRouter.get("/", async (ctx) => {
   }
 });
 
-// GET /api/clients/:id – pobranie klienta
-clientsRouter.get("/:id", async (ctx) => {
-  try {
-    const id = Number(ctx.params.id);
-    validateId(id);
+// // GET /api/clients/:id – pobranie klienta
+// clientsRouter.get("/:id", async (ctx) => {
+//   try {
+//     const id = Number(ctx.params.id);
+//     validateId(id);
 
-    const client = await clientService.getClientDetails(id);
+//     const client = await clientService.getClientDetails(id);
 
-    if (!client) {
-      ctx.response.status = 404;
-      ctx.response.body = { error: "Client not found" };
-      return;
-    }
+//     if (!client) {
+//       ctx.response.status = 404;
+//       ctx.response.body = { error: "Client not found" };
+//       return;
+//     }
 
-    ctx.response.body = client;
-    ctx.response.status = 200;
-  } catch (error) {
-    handleError(ctx, error);
-  }
-});
+//     ctx.response.body = client;
+//     ctx.response.status = 200;
+//   } catch (error) {
+//     handleError(ctx, error);
+//   }
+// });
 
-// POST /api/clients – dodanie klienta
-clientsRouter.post("/", async (ctx) => {
-  try {
-    const body = ctx.request.body({ type: "json" });
-    const data = await body.value;
+// // POST /api/clients – dodanie klienta
+// clientsRouter.post("/", async (ctx) => {
+//   try {
+//     const body = ctx.request.body({ type: "json" });
+//     const data = await body.value;
 
-    const newClient = await clientService.createClient(data);
-    console.log("Client created successfully");
+//     const newClient = await clientService.createClient(data);
+//     console.log("Client created successfully");
 
-    ctx.response.body = newClient;
-    ctx.response.status = 201;
-  } catch (error) {
-    handleError(ctx, error);
-  }
-});
+//     ctx.response.body = newClient;
+//     ctx.response.status = 201;
+//   } catch (error) {
+//     handleError(ctx, error);
+//   }
+// });
 
-// PATCH /api/clients/:id – aktualizacja klienta
-clientsRouter.patch("/:id", async (ctx) => {
-  try {
-    const id = Number(ctx.params.id);
-    validateId(id);
+// // PATCH /api/clients/:id – aktualizacja klienta
+// clientsRouter.patch("/:id", async (ctx) => {
+//   try {
+//     const id = Number(ctx.params.id);
+//     validateId(id);
 
-    const body = ctx.request.body({ type: "json" });
-    const data = await body.value;
+//     const body = ctx.request.body({ type: "json" });
+//     const data = await body.value;
 
-    const updatedClient = await clientService.updateClient(id, data);
+//     const updatedClient = await clientService.updateClient(id, data);
 
-    if (!updatedClient) {
-      ctx.response.status = 404;
-      ctx.response.body = { error: "Client not found" };
-      return;
-    }
+//     if (!updatedClient) {
+//       ctx.response.status = 404;
+//       ctx.response.body = { error: "Client not found" };
+//       return;
+//     }
 
-    ctx.response.body = updatedClient;
-    ctx.response.status = 200;
-  } catch (error) {
-    handleError(ctx, error);
-  }
-});
+//     ctx.response.body = updatedClient;
+//     ctx.response.status = 200;
+//   } catch (error) {
+//     handleError(ctx, error);
+//   }
+// });
 
-// DELETE /api/clients/:id – usunięcie
-clientsRouter.delete("/:id", async (ctx) => {
-  try {
-    const id = Number(ctx.params.id);
-    validateId(id);
+// // DELETE /api/clients/:id – usunięcie
+// clientsRouter.delete("/:id", async (ctx) => {
+//   try {
+//     const id = Number(ctx.params.id);
+//     validateId(id);
 
-    const deleted = await clientService.removeClient(id);
+//     const deleted = await clientService.removeClient(id);
 
-    if (!deleted) {
-      ctx.response.status = 404;
-      ctx.response.body = { error: "Client not found" };
-      return;
-    }
+//     if (!deleted) {
+//       ctx.response.status = 404;
+//       ctx.response.body = { error: "Client not found" };
+//       return;
+//     }
 
-    ctx.response.status = 204;
-  } catch (error) {
-    handleError(ctx, error);
-  }
-});
+//     ctx.response.status = 204;
+//   } catch (error) {
+//     handleError(ctx, error);
+//   }
+// });

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { type Client } from "../lib/types/domain.ts";
+  import { type ClientSummary } from "../../lib/types/domain";
 
-  let clients = $state<Client[]>([]);
+  let clients = $state<ClientSummary[]>([]);
   let loading = $state(true);
   let error = $state("");
 
@@ -32,14 +32,14 @@
     <div class="clients-list">
       {#each clients as client}
         <div class="client-card">
-          <h3>{client.nazwa_firmy}</h3>
-          <p><strong>NIP:</strong> {client.nip}</p>
+          <h3>{client.company_data.nazwa_firmy}</h3>
+          <p><strong>NIP:</strong> {client.company_data.nip}</p>
           <p>
             <strong>Miejscowość:</strong>
-            {client.miejscowosc}
+            {client.adres.miejscowosc} ({client.adres.kod_pocztowy})
           </p>
-          <p><strong>Email:</strong> {client.email}</p>
-          <p><strong>Telefon:</strong> {client.telefon}</p>
+          <p><strong>Email:</strong> {client.contact_data.email}</p>
+          <p><strong>Telefon:</strong> {client.contact_data.telefon}</p>
           <p><strong>Status:</strong> {client.status_kod}</p>
         </div>
       {/each}

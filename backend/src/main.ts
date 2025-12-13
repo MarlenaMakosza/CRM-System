@@ -1,8 +1,14 @@
 import { Application, Router } from "oak";
+import { oakCors } from "oakCors";
 import { clientsRouter } from "./routes/clientsController.ts";
 import { healthcheck } from "./routes/health.ts";
 
 const app = new Application();
+
+// CORS - zezwól na żądania z frontendu
+app.use(oakCors({
+  origin: "*", // W produkcji ustaw konkretny origin
+}));
 
 // Logowanie żądań
 app.use(async (ctx, next) => {

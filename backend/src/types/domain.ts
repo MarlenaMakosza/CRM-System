@@ -1,13 +1,6 @@
-// ============================================================================
-// ENCJE DOMENOWE - odzwierciedlają schemat bazy danych
-// ============================================================================
+export type StatusKlienta = "PROSPEKT" | "AKTYWNY" | "NIEAKTYWNY" | "VIP";
 
-/**
- * Adres - tabela `adres`
- * Zamiast null używamy pustego stringa ""
- */
 export type Address = {
-  id: number;
   ulica: string;
   numer_budynku: string;
   numer_lokalu: string;
@@ -16,33 +9,44 @@ export type Address = {
   wojewodztwo: string;
 };
 
-/**
- * Wspólne pola klienta (podstawowe dane biznesowe)
- */
-export type ClientBase = {
-  nip: string;
-  nazwa_firmy: string;
-  imie: string;
-  nazwisko: string;
-  stanowisko: string;
+export type ContactData = {
   email: string;
   telefon: string;
 };
 
-/**
- * Nowy klient (do utworzenia w bazie)
- */
-export type NewClient = ClientBase & {
-  adres_id: number;
-  status_klienta_id: number;
+export type ContactPerson = {
+  imie: string;
+  nazwisko: string;
+  stanowisko: string;
+  contact_data: ContactData;
 };
 
-/**
- * Klient - pełny obiekt z danymi
- */
-export type Client = ClientBase & {
+export type CompanyData = {
+  nip: string;
+  nazwa_firmy: string;
+};
+
+export type ClientMetadata = {
   id: number;
+  created_at: string;
+};
+
+export type Client = {
+  client_metadata: ClientMetadata;
+  contact_person: ContactPerson;
+  company_data: CompanyData;
   adres: Address;
-  status_kod: string;
-  created_at: Date;
+  status_kod: StatusKlienta;
+};
+
+export type AddressSummary = {
+  kod_pocztowy: string;
+  miejscowosc: string;
+};
+
+export type ClientSummary = {
+  company_data: CompanyData;
+  contact_data: ContactData;
+  adres: AddressSummary;
+  status_kod: StatusKlienta;
 };

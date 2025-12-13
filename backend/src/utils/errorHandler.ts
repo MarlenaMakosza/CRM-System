@@ -1,5 +1,5 @@
 import { Context } from "oak";
-import { ValidationError } from "./validation.ts";
+// import { ValidationError } from "./validation.ts";
 
 export function handleError(ctx: Context, error: unknown): void {
   if (error instanceof ClientNotFoundError) {
@@ -9,11 +9,11 @@ export function handleError(ctx: Context, error: unknown): void {
     };
     return;
   }
-  if (error instanceof ValidationError) {
-    ctx.response.status = error.statusCode;
-    ctx.response.body = { error: error.message };
-    return;
-  }
+  // if (error instanceof ValidationError) {
+  //   ctx.response.status = error.statusCode;
+  //   ctx.response.body = { error: error.message };
+  //   return;
+  // }
   if (error instanceof Error && error.message === "Invalid ID") {
     ctx.response.status = 400;
     ctx.response.body = { error: "Invalid ID" };
