@@ -1,8 +1,10 @@
 import * as clientRepo from "../repository/clientRepository.ts";
-import { dbClientListItemToDomain } from "../mappers/clientMapper.ts";
+import {
+  dbClientDetailsToClient,
+  dbClientToClientSummary,
+} from "../mappers/clientMapper.ts";
 
-// import { Address, Client, NewClient } from "../types/index.ts";
-import { ClientSummary } from "../types/domain.ts";
+import { Client, ClientSummary } from "../types/domain.ts";
 // import {
 //   validateClient,
 //   validateUpdateClient,
@@ -11,14 +13,13 @@ import { ClientSummary } from "../types/domain.ts";
 
 export async function listClients(): Promise<ClientSummary[]> {
   const dbClients = await clientRepo.getAllClients();
-  return dbClients.map(dbClientListItemToDomain);
+  return dbClients.map(dbClientToClientSummary);
 }
 
-// export function getClientDetails(
-//   id: number,
-// ): Promise<Client> {
-//   return clientRepo.getClientById(id);
-// }
+export async function getClientDetails(id: number): Promise<Client> {
+  const dbClient = await clientRepo.getClientById(id);
+  return dbClientDetailsToClient(dbClient);
+}
 
 // export async function createClient(
 //   request: Client,

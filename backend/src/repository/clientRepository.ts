@@ -1,8 +1,7 @@
 import { sql } from "db";
 
-import { DbClientSummaryRow } from "../types/database.ts";
-// import { Address, Client, NewClient } from "../types/index.ts";
-// import { ClientNotFoundError } from "../utils/errorHandler.ts";
+import { DbClientDetails, DbClientSummaryRow } from "../types/database.ts";
+import { ClientNotFoundError } from "../utils/errorHandler.ts";
 
 /**
  * Pobierz listę wszystkich klientów
@@ -20,54 +19,32 @@ export function getAllClients(): Promise<DbClientSummaryRow[]> {
   `;
 }
 
-// /**
-//  * Pobierz klienta po jego ID
-//  * @param {number} id - ID klienta
-//  * @returns {Promise<Client>} - Klient o podanym ID lub null, jeśli klient nie istnieje
-//  * @throws {ClientNotFoundError} - jeśli klient nie istnieje
-//  */
-// export async function getClientById(id: number): Promise<Client> {
-//   const raw = await sql`
-//     SELECT
-//       k.id, k.nip, k.nazwa_firmy, k.imie, k.nazwisko, k.stanowisko,
-//       k.email, k.telefon, k.created_at, s.kod AS status_kod,
-//       a.ulica, a.numer_budynku, a.numer_lokalu,
-//       a.kod_pocztowy, a.miejscowosc, a.wojewodztwo, a.id AS adres_id
-//     FROM klient k
-//     JOIN adres a ON k.adres_id = a.id
-//     JOIN status_klienta s ON k.status_klienta_id = s.id
-//     WHERE k.id = ${id}
-//     LIMIT 1
-//   `;
+/**
+ * Pobierz klienta po jego ID
+ * @param {number} id - ID klienta
+ * @returns {Promise<DbClientDetails>} - surowe dane klienta z bazy
+ * @throws {ClientNotFoundError} - jeśli klient nie istnieje
+ */
+export async function getClientById(id: number): Promise<DbClientDetails> {
+  const raw = await sql<DbClientDetails[]>`
+    SELECT
+      k.id, k.nip, k.nazwa_firmy, k.imie, k.nazwisko, k.stanowisko,
+      k.email, k.telefon, k.created_at, s.kod AS status_kod,
+      a.id AS adres_id, a.ulica, a.numer_budynku, a.numer_lokalu,
+      a.kod_pocztowy, a.miejscowosc, a.wojewodztwo
+    FROM klient k
+    JOIN adres a ON k.adres_id = a.id
+    JOIN status_klienta s ON k.status_klienta_id = s.id
+    WHERE k.id = ${id}
+    LIMIT 1
+  `;
 
-//   if (raw.length === 0) {
-//     throw new ClientNotFoundError(id);
-//   }
+  if (raw.length === 0) {
+    throw new ClientNotFoundError(id);
+  }
 
-//   const rawClient = raw[0];
-//   const client: Client = {
-//     id: rawClient.id,
-//     nip: rawClient.nip,
-//     nazwa_firmy: rawClient.nazwa_firmy,
-//     imie: rawClient.imie,
-//     nazwisko: rawClient.nazwisko,
-//     stanowisko: rawClient.stanowisko,
-//     email: rawClient.email,
-//     telefon: rawClient.telefon,
-//     status_kod: rawClient.status_kod,
-//     created_at: rawClient.created_at,
-//     adres: {
-//       id: rawClient.adres_id,
-//       ulica: rawClient.ulica,
-//       numer_budynku: rawClient.numer_budynku,
-//       numer_lokalu: rawClient.numer_lokalu,
-//       kod_pocztowy: rawClient.kod_pocztowy,
-//       miejscowosc: rawClient.miejscowosc,
-//       wojewodztwo: rawClient.wojewodztwo,
-//     },
-//   };
-//   return client;
-// }
+  return raw[0];
+}
 
 // /**
 //  * Tworzy nowy rekord w tabeli `adres` z danymi wartościami

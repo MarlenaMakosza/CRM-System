@@ -1,7 +1,7 @@
 import { Router } from "oak";
 import * as clientService from "../service/clientService.ts";
 import { handleError } from "../utils/errorHandler.ts";
-// import { validateId } from "../utils/validation.ts";
+import { validateId } from "../utils/validation.ts";
 export const clientsRouter = new Router({ prefix: "/api/clients" });
 
 // ===== ENDPOINTS =====
@@ -17,26 +17,20 @@ clientsRouter.get("/", async (ctx) => {
   }
 });
 
-// // GET /api/clients/:id – pobranie klienta
-// clientsRouter.get("/:id", async (ctx) => {
-//   try {
-//     const id = Number(ctx.params.id);
-//     validateId(id);
+// GET /api/clients/:id – pobranie klienta
+clientsRouter.get("/:id", async (ctx) => {
+  try {
+    const id = Number(ctx.params.id);
+    validateId(id);
 
-//     const client = await clientService.getClientDetails(id);
+    const client = await clientService.getClientDetails(id);
 
-//     if (!client) {
-//       ctx.response.status = 404;
-//       ctx.response.body = { error: "Client not found" };
-//       return;
-//     }
-
-//     ctx.response.body = client;
-//     ctx.response.status = 200;
-//   } catch (error) {
-//     handleError(ctx, error);
-//   }
-// });
+    ctx.response.body = client;
+    ctx.response.status = 200;
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
 
 // // POST /api/clients – dodanie klienta
 // clientsRouter.post("/", async (ctx) => {

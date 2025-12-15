@@ -12,7 +12,10 @@ export type {
 } from "./domain.ts";
 
 // Database
-export type { DbClientSummaryRow as DbClientSummaryRow } from "./database.ts";
+export type {
+  DbClientDetails,
+  DbClientSummaryRow as DbClientSummaryRow,
+} from "./database.ts";
 
 // Utils
 export { isEmpty, nullToEmpty, undefinedToEmpty } from "./utils.ts";

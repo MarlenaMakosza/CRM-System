@@ -9,12 +9,12 @@
 //   }
 // }
 
-// // Walidacja ID
-// export function validateId(id: number): void {
-//   if (!Number.isInteger(id) || id <= 0) {
-//     throw new Error("Invalid ID");
-//   }
-// }
+// Walidacja ID
+export function validateId(id: number): void {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid ID");
+  }
+}
 
 // // Walidacja formatów dla CreateClientRequest
 // export async function validateClient(data: Client): Promise<void> {
