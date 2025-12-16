@@ -30,21 +30,21 @@ clientsRouter.get("/:id", async (ctx) => {
   }
 });
 
-// // POST /api/clients – dodanie klienta
-// clientsRouter.post("/", async (ctx) => {
-//   try {
-//     const body = ctx.request.body({ type: "json" });
-//     const data = await body.value;
+// POST /api/clients – dodanie klienta
+clientsRouter.post("/", async (ctx) => {
+  try {
+    const body = ctx.request.body({ type: "json" });
+    const data = await body.value;
 
-//     const newClient = await clientService.createClient(data);
-//     console.log("Client created successfully");
+    const newClient = await clientService.createClient(data);
+    console.log("Client created successfully");
 
-//     ctx.response.body = newClient;
-//     ctx.response.status = 201;
-//   } catch (error) {
-//     handleError(ctx, error);
-//   }
-// });
+    ctx.response.body = newClient;
+    ctx.response.status = 201;
+  } catch (error) {
+    handleError(ctx, error);
+  }
+});
 
 // // PATCH /api/clients/:id – aktualizacja klienta
 // clientsRouter.patch("/:id", async (ctx) => {

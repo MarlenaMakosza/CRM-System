@@ -1,12 +1,14 @@
 import * as clientRepo from "../repository/clientRepository.ts";
 import {
+  createClientRequestToNewAddress as mapToNewAddress,
+  createClientRequestToNewClient as mapToNewClient,
   dbClientDetailsToClient,
   dbClientToClientSummary,
 } from "../mappers/clientMapper.ts";
 
-import { Client, ClientSummary } from "../types/index.ts";
+import { Client, ClientSummary, CreateClient } from "../types/index.ts";
 import { validateId } from "../utils/validation.ts";
-
+import { validateCreateClient } from "../utils/validation.ts";
 
 /**
  * Pobierz listę wszystkich klientów
@@ -16,7 +18,6 @@ export async function listClients(): Promise<ClientSummary[]> {
   const dbClients = await clientRepo.getAllClients();
   return dbClients.map(dbClientToClientSummary);
 }
-
 
 /**
  * Pobierz pełne dane klienta o podanym ID
@@ -31,30 +32,35 @@ export async function getClientDetails(id: number): Promise<Client> {
   return dbClientDetailsToClient(dbClient);
 }
 
-// export async function createClient(
-//   request: Client,
-// ): Promise<Client> {
-//   await validateClient(request);
+/**
+ * Tworzy nowego klienta w systemie
+ * @param {CreateClientRequest} request - dane nowego klienta (zagnieżdżona struktura)
+ * @returns {Promise<Client>} - utworzony klient w pełnej strukturze domenowej
+ * @throws {ValidationError} gdy dane są niepoprawne
+ */
+export async function createClient(
+  request: CreateClient,
+): Promise<Client> {
+  // 1. Walidacja
+  await validateCreateClient(request);
 
-//   const statusId: number = await clientRepo.getStatusId(request.status_kod);
-//   const adresId: number = await clientRepo.createAddress(request.adres);
+  // 2. Pobierz status_klienta_id
+  const statusId = await clientRepo.getStatusId(request.status_kod);
 
-//   const newClientData: NewClient = {
-//     nip: request.nip,
-//     nazwa_firmy: request.nazwa_firmy,
-//     imie: request.imie,
-//     nazwisko: request.nazwisko,
-//     stanowisko: request.stanowisko,
-//     email: request.email,
-//     telefon: request.telefon,
-//     adres_id: adresId,
-//     status_klienta_id: statusId,
-//   };
+  // 3. Utwórz adres
+  const newAddress = mapToNewAddress(request);
+  const adresId = await clientRepo.createAddress(newAddress);
 
-//   const createdClientId: number = await clientRepo.createClient(newClientData);
+  // 4. Utwórz klienta
+  const newClient = mapToNewClient(request, adresId, statusId);
+  const clientId = await clientRepo.createClient(newClient);
 
-//   return await clientRepo.getClientById(createdClientId);
-// }
+  // 5. Pobierz utworzonego klienta z bazy i zmapuj na domenowy typ Client
+  const dbClient = await clientRepo.getClientById(clientId);
+
+  // 6. Użyj istniejącego mappera!
+  return dbClientDetailsToClient(dbClient);
+}
 
 // export async function updateClient(
 //   id: number,

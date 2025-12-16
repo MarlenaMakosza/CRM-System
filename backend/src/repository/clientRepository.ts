@@ -1,6 +1,11 @@
 import { sql } from "db";
 
-import { DbClientDetails, DbClientSummaryRow } from "../types/database.ts";
+import {
+  DbClientDetails,
+  DbClientSummaryRow,
+  NewAddress,
+  NewClient,
+} from "../types/database.ts";
 import { ClientNotFoundError } from "../utils/errorHandler.ts";
 
 /**
@@ -46,67 +51,68 @@ export async function getClientById(id: number): Promise<DbClientDetails> {
   return raw[0];
 }
 
-// /**
-//  * Tworzy nowy rekord w tabeli `adres` z danymi wartościami
-//  * @param {Address} adres - obiekt z danymi wartościami
-//  * @returns {Promise<number>} - ID nowo utworzonego rekordu
-//  */
-// export async function createAddress(
-//   adres: Address,
-// ): Promise<number> {
-//   const adresRows = await sql`
-//     INSERT INTO adres (
-//       ulica, numer_budynku, numer_lokalu,
-//       kod_pocztowy, miejscowosc, wojewodztwo
-//     )
-//     VALUES (
-//       ${adres.ulica},
-//       ${adres.numer_budynku},
-//       ${adres.numer_lokalu ?? ""},
-//       ${adres.kod_pocztowy},
-//       ${adres.miejscowosc},
-//       ${adres.wojewodztwo}
-//     )
-//     RETURNING id
-//   `;
-//   if (adresRows.length === 0) {
-//     throw new Error("Failed to create address");
-//   }
+/**
+ * Tworzy nowy rekord w tabeli `adres`
+ * @param {NewAddress} adres - dane nowego adresu
+ * @returns {Promise<number>} - ID nowo utworzonego rekordu
+ */
+export async function createAddress(
+  adres: NewAddress,
+): Promise<number> {
+  const adresRows = await sql<{ id: number }[]>`
+    INSERT INTO adres (
+      ulica, numer_budynku, numer_lokalu,
+      kod_pocztowy, miejscowosc, wojewodztwo
+    )
+    VALUES (
+      ${adres.ulica},
+      ${adres.numer_budynku},
+      ${adres.numer_lokalu},
+      ${adres.kod_pocztowy},
+      ${adres.miejscowosc},
+      ${adres.wojewodztwo}
+    )
+    RETURNING id
+  `;
 
-//   return adresRows[0].id;
-// }
+  if (adresRows.length === 0) {
+    throw new Error("Failed to create address");
+  }
 
-// /**
-//  * Tworzy nowy rekord w tabeli `klient`
-//  * @param {NewClient} client - dane nowego klienta
-//  * @returns {Promise<number>} - ID utworzonego klienta
-//  */
-// export async function createClient(
-//   client: NewClient,
-// ): Promise<number> {
-//   const clientRows = await sql<{ id: number }[]>`
-//     INSERT INTO klient (
-//       nip, nazwa_firmy, imie, nazwisko, stanowisko,
-//       email, telefon, adres_id, status_klienta_id
-//     )
-//     VALUES (
-//       ${client.nip},
-//       ${client.nazwa_firmy},
-//       ${client.imie},
-//       ${client.nazwisko},
-//       ${client.stanowisko},
-//       ${client.email},
-//       ${client.telefon},
-//       ${client.adres_id},
-//       ${client.status_klienta_id}
-//     )
-//     RETURNING id
-//   `;
-//   if (clientRows.length === 0) {
-//     throw new Error("Failed to create client");
-//   }
-//   return clientRows[0].id;
-// }
+  return adresRows[0].id;
+}
+
+/**
+ * Tworzy nowy rekord w tabeli `klient`
+ * @param {NewClient} client - dane nowego klienta
+ * @returns {Promise<number>} - ID utworzonego klienta
+ */
+export async function createClient(
+  client: NewClient,
+): Promise<number> {
+  const clientRows = await sql<{ id: number }[]>`
+    INSERT INTO klient (
+      nip, nazwa_firmy, imie, nazwisko, stanowisko,
+      email, telefon, adres_id, status_klienta_id
+    )
+    VALUES (
+      ${client.nip},
+      ${client.nazwa_firmy},
+      ${client.imie},
+      ${client.nazwisko},
+      ${client.stanowisko},
+      ${client.email},
+      ${client.telefon},
+      ${client.adres_id},
+      ${client.status_klienta_id}
+    )
+    RETURNING id
+  `;
+  if (clientRows.length === 0) {
+    throw new Error("Failed to create client");
+  }
+  return clientRows[0].id;
+}
 
 // export async function updateAddress(adres: Address): Promise<void> {
 //   const result = await sql`
@@ -121,12 +127,12 @@ export async function getClientById(id: number): Promise<DbClientDetails> {
 //      WHERE id = ${adres.id}
 //      RETURNING id
 //    `;
-
+//
 //   if (result.length === 0) {
 //     throw new Error(`Address with id ${adres.id} not found`);
 //   }
 // }
-
+//
 // export async function updateClient(
 //   id: number,
 //   client: NewClient,
@@ -149,47 +155,47 @@ export async function getClientById(id: number): Promise<DbClientDetails> {
 //     throw new Error(`Client with id ${id} not found`);
 //   }
 // }
-
+//
 // export async function deleteClient(id: number): Promise<boolean> {
 //   const result = await sql`
 //     DELETE FROM klient WHERE id = ${id}
 //     RETURNING id
 //   `;
-
+//
 //   if (result.length === 0) {
 //     throw new ClientNotFoundError(id);
 //   }
-
+//
 //   return true;
 // }
 
-// export async function getStatusId(status_kod: string): Promise<number> {
-//   const statusRows = await sql`
-//     SELECT id FROM status_klienta
-//     WHERE kod = ${status_kod}
-//     LIMIT 1
-//   `;
-//   if (statusRows.length === 0) {
-//     throw new Error(`Status with code '${status_kod}' not found`);
-//   }
+export async function getStatusId(status_kod: string): Promise<number> {
+  const statusRows = await sql`
+    SELECT id FROM status_klienta
+    WHERE kod = ${status_kod}
+    LIMIT 1
+  `;
+  if (statusRows.length === 0) {
+    throw new Error(`Status with code '${status_kod}' not found`);
+  }
 
-//   return statusRows[0].id;
-// }
+  return statusRows[0].id;
+}
 
-// // Sprawdź czy NIP już istnieje
-// export async function checkNipExists(
-//   nip: string,
-//   excludeId?: number,
-// ): Promise<boolean> {
-//   if (excludeId) {
-//     const result = await sql`
-//       SELECT id FROM klient WHERE nip = ${nip} AND id != ${excludeId} LIMIT 1
-//     `;
-//     return result.length > 0;
-//   }
+// Sprawdź czy NIP już istnieje
+export async function checkNipExists(
+  nip: string,
+  excludeId?: number,
+): Promise<boolean> {
+  if (excludeId) {
+    const result = await sql`
+      SELECT id FROM klient WHERE nip = ${nip} AND id != ${excludeId} LIMIT 1
+    `;
+    return result.length > 0;
+  }
 
-//   const result = await sql`
-//     SELECT id FROM klient WHERE nip = ${nip} LIMIT 1
-//   `;
-//   return result.length > 0;
-// }
+  const result = await sql`
+    SELECT id FROM klient WHERE nip = ${nip} LIMIT 1
+  `;
+  return result.length > 0;
+}
