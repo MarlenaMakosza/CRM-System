@@ -1,18 +1,40 @@
-// import { checkNipExists, getStatusId } from "../repository/clientRepository.ts";
-// import { Client } from "../types/index.ts";
+// ============================================================================
+// CUSTOM ERROR CLASSES
+// ============================================================================
 
-// // Custom error class
-// export class ValidationError extends Error {
-//   constructor(message: string, public statusCode: number = 400) {
-//     super(message);
-//     this.name = "ValidationError";
-//   }
-// }
+/**
+ * Błąd walidacji - używany gdy dane nie przechodzą walidacji biznesowej
+ * Domyślnie zwraca status 400 Bad Request
+ */
+export class ValidationError extends Error {
+  constructor(message: string, public statusCode: number = 400) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
 
-// Walidacja ID
+/**
+ * Błąd niepoprawnego inputu - używany gdy format danych jest zły
+ * (np. niepoprawne ID, niepoprawny format danych)
+ */
+export class InvalidInputError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidInputError";
+  }
+}
+
+// ============================================================================
+// VALIDATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Walidacja ID - sprawdza czy ID jest poprawną liczbą całkowitą > 0
+ * @throws {InvalidInputError} gdy ID jest niepoprawne
+ */
 export function validateId(id: number): void {
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid ID");
+    throw new InvalidInputError("ID must be a positive integer greater than 0");
   }
 }
 

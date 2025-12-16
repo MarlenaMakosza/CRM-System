@@ -5,13 +5,24 @@ import {
 } from "../mappers/clientMapper.ts";
 
 import { Client, ClientSummary } from "../types/index.ts";
+import { validateId } from "../utils/validation.ts";
 
+/**
+ * Pobierz listę wszystkich klientów
+ */
 export async function listClients(): Promise<ClientSummary[]> {
   const dbClients = await clientRepo.getAllClients();
   return dbClients.map(dbClientToClientSummary);
 }
 
+/**
+ * Pobierz szczegóły klienta po ID
+ * Waliduje ID przed wykonaniem zapytania do bazy
+ * @throws {InvalidInputError} gdy ID jest niepoprawne
+ * @throws {ClientNotFoundError} gdy klient nie istnieje
+ */
 export async function getClientDetails(id: number): Promise<Client> {
+  validateId(id);
   const dbClient = await clientRepo.getClientById(id);
   return dbClientDetailsToClient(dbClient);
 }

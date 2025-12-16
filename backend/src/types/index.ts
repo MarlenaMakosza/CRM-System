@@ -21,5 +21,8 @@ export type {
   DbClientSummaryRow as DbClientSummaryRow,
 } from "./database.ts";
 
+// Errors
+export type { ErrorResponse } from "./errors.ts";
+
 // Utils
 export { isEmpty, nullToEmpty, undefinedToEmpty } from "./utils.ts";

@@ -1,7 +1,7 @@
 import { Router } from "oak";
 import * as clientService from "../service/clientService.ts";
 import { handleError } from "../utils/errorHandler.ts";
-import { validateId } from "../utils/validation.ts";
+
 export const clientsRouter = new Router({ prefix: "/api/clients" });
 
 // ===== ENDPOINTS =====
@@ -21,8 +21,6 @@ clientsRouter.get("/", async (ctx) => {
 clientsRouter.get("/:id", async (ctx) => {
   try {
     const id = Number(ctx.params.id);
-    validateId(id);
-
     const client = await clientService.getClientDetails(id);
 
     ctx.response.body = client;
