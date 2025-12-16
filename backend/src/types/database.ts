@@ -35,3 +35,30 @@ export type DbClientDetails = {
   miejscowosc: string;
   wojewodztwo: string;
 };
+
+/**
+ * Typ dla wstawiania nowego adresu do bazy
+ */
+export type NewAddress = {
+  ulica: string;
+  numer_budynku: string;
+  numer_lokalu: string; // NOT NULL DEFAULT '' w bazie
+  kod_pocztowy: string;
+  miejscowosc: string;
+  wojewodztwo: string;
+};
+
+/**
+ * Typ dla wstawiania nowego klienta do bazy (bez id i created_at)
+ */
+export type NewClient = {
+  nip: string;
+  nazwa_firmy: string;
+  imie: string;
+  nazwisko: string;
+  stanowisko: string;
+  email: string;
+  telefon: string;
+  adres_id: number; // FK
+  status_klienta_id: number; // FK
+};

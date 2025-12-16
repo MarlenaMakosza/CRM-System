@@ -50,3 +50,15 @@ export type ClientSummary = {
   adres: AddressSummary;
   status_kod: StatusKlienta;
 };
+
+/**
+ * Request dla tworzenia nowego klienta
+ * Używa zagnieżdżonej struktury zgodnej z domeną biznesową
+ * Wszystkie pola wymagane (brak client_metadata - generowane automatycznie)
+ */
+export type CreateClient = {
+  contact_person: ContactPerson;
+  company_data: CompanyData;
+  adres: Address;
+  status_kod: StatusKlienta;
+};

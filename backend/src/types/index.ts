@@ -12,6 +12,7 @@ export type {
   CompanyData,
   ContactData,
   ContactPerson,
+  CreateClient,
   StatusKlienta,
 } from "./clients.ts";
 
@@ -19,6 +20,8 @@ export type {
 export type {
   DbClientDetails,
   DbClientSummaryRow as DbClientSummaryRow,
+  NewAddress,
+  NewClient,
 } from "./database.ts";
 
 // Errors
