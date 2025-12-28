@@ -28,11 +28,11 @@ INSERT INTO typ_umowy (nazwa) VALUES
   ('jednorazowa');
 
 -- ===== REGIONY =====
-INSERT INTO region (nazwa, wojewodztwo) VALUES
-  ('Poznań', 'wielkopolskie'),
-  ('Szczecin', 'zachodniopomorskie'),
-  ('Wrocław', 'dolnośląskie'),
-  ('Zielona Góra', 'lubuskie');
+INSERT INTO region (nazwa) VALUES
+  ('Poznań'),
+  ('Szczecin'),
+  ('Wrocław'),
+  ('Zielona Góra');
 
 -- ===== PRODUKTY =====
 INSERT INTO produkt (nazwa, opis, cena) VALUES
