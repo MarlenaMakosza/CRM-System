@@ -1,37 +1,42 @@
 import { sql } from "db";
 
-import { Address, Client, NewClient } from "../types/index.ts";
+import {
+  DbClientDetails,
+  DbClientSummaryRow,
+  NewAddress,
+  NewClient,
+} from "../types/database.ts";
 import { ClientNotFoundError } from "../utils/errorHandler.ts";
 
 /**
  * Pobierz listę wszystkich klientów
- * @returns {Promise<Client[]>} - lista wszystkich klientów
+ * @returns {Promise<DbClientSummaryRow[]>} - lista wszystkich klientów
  */
-export function getAllClients(): Promise<Client[]> {
-  return sql<Client[]>`
+export function getAllClients(): Promise<DbClientSummaryRow[]> {
+  return sql<DbClientSummaryRow[]>`
     SELECT
-      k.id, k.nip, k.nazwa_firmy, k.email, k.telefon,
+      k.nip, k.nazwa_firmy, k.email, k.telefon,
       a.miejscowosc, a.kod_pocztowy, s.kod AS status_kod
     FROM klient k
     JOIN adres a ON k.adres_id = a.id
     JOIN status_klienta s ON k.status_klienta_id = s.id
-    ORDER BY k.created_at DESC
+    ORDER BY k.id DESC
   `;
 }
 
 /**
  * Pobierz klienta po jego ID
  * @param {number} id - ID klienta
- * @returns {Promise<Client>} - Klient o podanym ID lub null, jeśli klient nie istnieje
+ * @returns {Promise<DbClientDetails>} - surowe dane klienta z bazy
  * @throws {ClientNotFoundError} - jeśli klient nie istnieje
  */
-export async function getClientById(id: number): Promise<Client> {
-  const raw = await sql`
+export async function getClientById(id: number): Promise<DbClientDetails> {
+  const raw = await sql<DbClientDetails[]>`
     SELECT
       k.id, k.nip, k.nazwa_firmy, k.imie, k.nazwisko, k.stanowisko,
       k.email, k.telefon, k.created_at, s.kod AS status_kod,
-      a.ulica, a.numer_budynku, a.numer_lokalu,
-      a.kod_pocztowy, a.miejscowosc, a.wojewodztwo, a.id AS adres_id
+      a.id AS adres_id, a.ulica, a.numer_budynku, a.numer_lokalu,
+      a.kod_pocztowy, a.miejscowosc, a.wojewodztwo
     FROM klient k
     JOIN adres a ON k.adres_id = a.id
     JOIN status_klienta s ON k.status_klienta_id = s.id
@@ -43,40 +48,18 @@ export async function getClientById(id: number): Promise<Client> {
     throw new ClientNotFoundError(id);
   }
 
-  const rawClient = raw[0];
-  const client: Client = {
-    id: rawClient.id,
-    nip: rawClient.nip,
-    nazwa_firmy: rawClient.nazwa_firmy,
-    imie: rawClient.imie,
-    nazwisko: rawClient.nazwisko,
-    stanowisko: rawClient.stanowisko,
-    email: rawClient.email,
-    telefon: rawClient.telefon,
-    status_kod: rawClient.status_kod,
-    created_at: rawClient.created_at,
-    adres: {
-      id: rawClient.adres_id,
-      ulica: rawClient.ulica,
-      numer_budynku: rawClient.numer_budynku,
-      numer_lokalu: rawClient.numer_lokalu,
-      kod_pocztowy: rawClient.kod_pocztowy,
-      miejscowosc: rawClient.miejscowosc,
-      wojewodztwo: rawClient.wojewodztwo,
-    },
-  };
-  return client;
+  return raw[0];
 }
 
 /**
- * Tworzy nowy rekord w tabeli `adres` z danymi wartościami
- * @param {Address} adres - obiekt z danymi wartościami
+ * Tworzy nowy rekord w tabeli `adres`
+ * @param {NewAddress} adres - dane nowego adresu
  * @returns {Promise<number>} - ID nowo utworzonego rekordu
  */
 export async function createAddress(
-  adres: Address,
+  adres: NewAddress,
 ): Promise<number> {
-  const adresRows = await sql`
+  const adresRows = await sql<{ id: number }[]>`
     INSERT INTO adres (
       ulica, numer_budynku, numer_lokalu,
       kod_pocztowy, miejscowosc, wojewodztwo
@@ -84,13 +67,14 @@ export async function createAddress(
     VALUES (
       ${adres.ulica},
       ${adres.numer_budynku},
-      ${adres.numer_lokalu ?? ""},
+      ${adres.numer_lokalu},
       ${adres.kod_pocztowy},
       ${adres.miejscowosc},
       ${adres.wojewodztwo}
     )
     RETURNING id
   `;
+
   if (adresRows.length === 0) {
     throw new Error("Failed to create address");
   }
@@ -130,30 +114,47 @@ export async function createClient(
   return clientRows[0].id;
 }
 
-export async function updateAddress(adres: Address): Promise<void> {
+/**
+ * Aktualizuje adres o podanym ID
+ * @param {number} id - ID adresu do aktualizacji
+ * @param {NewAddress} adres - nowe dane adresu
+ * @returns {Promise<void>}
+ * @throws {Error} jeśli adres nie istnieje
+ */
+export async function updateAddress(
+  id: number,
+  adres: NewAddress,
+): Promise<void> {
   const result = await sql`
      UPDATE adres
      SET
        ulica = ${adres.ulica},
        numer_budynku = ${adres.numer_budynku},
-       numer_lokalu = ${adres.numer_lokalu ?? ""},
+       numer_lokalu = ${adres.numer_lokalu},
        kod_pocztowy = ${adres.kod_pocztowy},
        miejscowosc = ${adres.miejscowosc},
        wojewodztwo = ${adres.wojewodztwo}
-     WHERE id = ${adres.id}
+     WHERE id = ${id}
      RETURNING id
    `;
 
   if (result.length === 0) {
-    throw new Error(`Address with id ${adres.id} not found`);
+    throw new Error(`Address with id ${id} not found`);
   }
 }
 
+/**
+ * Aktualizuje klienta o podanym ID
+ * @param {number} id - ID klienta do aktualizacji
+ * @param {NewClient} client - nowe dane klienta
+ * @returns {Promise<void>}
+ * @throws {Error} jeśli klient nie istnieje
+ */
 export async function updateClient(
   id: number,
   client: NewClient,
 ): Promise<void> {
-  const result = await sql<NewClient[]>`
+  const result = await sql<{ id: number }[]>`
     UPDATE klient
     SET
       nip = ${client.nip},
@@ -168,21 +169,8 @@ export async function updateClient(
     RETURNING id
   `;
   if (result.length === 0) {
-    throw new Error(`Client with id ${id} not found`);
-  }
-}
-
-export async function deleteClient(id: number): Promise<boolean> {
-  const result = await sql`
-    DELETE FROM klient WHERE id = ${id}
-    RETURNING id
-  `;
-
-  if (result.length === 0) {
     throw new ClientNotFoundError(id);
   }
-
-  return true;
 }
 
 export async function getStatusId(status_kod: string): Promise<number> {
@@ -196,6 +184,17 @@ export async function getStatusId(status_kod: string): Promise<number> {
   }
 
   return statusRows[0].id;
+}
+
+/**
+ * Usuwa klienta o podanym ID z bazy
+ * Operacja jest idempotentna - jeśli klient nie istnieje, nic się nie stanie
+ * @param {number} id - ID klienta do usunięcia
+ * @returns {Promise<void>}
+ * @throws {Error} jeśli klient ma powiązane zdarzenia lub umowy (FK constraint violation)
+ */
+export async function deleteClient(id: number): Promise<void> {
+  await sql`DELETE FROM klient WHERE id = ${id}`;
 }
 
 // Sprawdź czy NIP już istnieje
