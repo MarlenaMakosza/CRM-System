@@ -3,6 +3,7 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { type ClientDetails } from "../../../lib/types/domain";
+  import { fetchClientById } from "../../../lib/api/client";
 
   let client = $state<ClientDetails | null>(null);
   let loading = $state(true);
@@ -12,16 +13,7 @@
     const clientId = $page.params.id;
 
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/clients/${clientId}`
-      );
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error("Klient nie został znaleziony");
-        }
-        throw new Error(`Błąd: ${response.statusText}`);
-      }
-      client = await response.json();
+      client = await fetchClientById(clientId);
     } catch (err) {
       error = err instanceof Error ? err.message : "Nieznany błąd";
     } finally {
@@ -65,21 +57,21 @@
           <div class="info-item">
             <span class="label">Imię i nazwisko:</span>
             <span class="value"
-              >{client.contact_data.imie}
-              {client.contact_data.nazwisko}</span
+              >{client.contact_person.imie}
+              {client.contact_person.nazwisko}</span
             >
           </div>
           <div class="info-item">
             <span class="label">Stanowisko:</span>
-            <span class="value">{client.contact_data.stanowisko}</span>
+            <span class="value">{client.contact_person.stanowisko}</span>
           </div>
           <div class="info-item">
             <span class="label">Email:</span>
-            <span class="value">{client.contact_data.email}</span>
+            <span class="value">{client.contact_person.contact_data.email}</span>
           </div>
           <div class="info-item">
             <span class="label">Telefon:</span>
-            <span class="value">{client.contact_data.telefon}</span>
+            <span class="value">{client.contact_person.contact_data.telefon}</span>
           </div>
         </div>
       </section>

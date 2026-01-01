@@ -122,16 +122,36 @@ export async function fetchEvents(): Promise<any[]> {
 }
 
 /**
- * fetchClients - pobierz klientów (bez autoryzacji na razie)
+ * fetchClients - pobierz klientów (z autoryzacją)
  */
 export async function fetchClients(): Promise<any[]> {
-  const response = await fetch(`${API_BASE_URL}/clients`);
+  const response = await fetchWithAuth(`${API_BASE_URL}/clients`);
 
   if (!response.ok) {
     throw new ApiError(
       response.status,
       response.statusText,
       "Nie udało się pobrać klientów",
+    );
+  }
+
+  return await response.json();
+}
+
+/**
+ * fetchClientById - pobierz pojedynczego klienta (z autoryzacją)
+ */
+export async function fetchClientById(id: string | number): Promise<any> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/clients/${id}`);
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new ApiError(response.status, response.statusText, "Klient nie został znaleziony");
+    }
+    throw new ApiError(
+      response.status,
+      response.statusText,
+      "Nie udało się pobrać klienta",
     );
   }
 

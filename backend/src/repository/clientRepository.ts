@@ -1,22 +1,23 @@
 import { sql } from "db";
 
 import {
-  DbClientDetails,
-  DbClientSummaryRow,
+  DbClient,
   NewAddress,
   NewClient,
 } from "../types/database.ts";
 import { ClientNotFoundError } from "../utils/errorHandler.ts";
 
 /**
- * Pobierz listę wszystkich klientów
- * @returns {Promise<DbClientSummaryRow[]>} - lista wszystkich klientów
+ * Pobierz listę wszystkich klientów (pełne dane)
+ * @returns {Promise<DbClient[]>} - lista wszystkich klientów
  */
-export function getAllClients(): Promise<DbClientSummaryRow[]> {
-  return sql<DbClientSummaryRow[]>`
+export function getAllClients(): Promise<DbClient[]> {
+  return sql<DbClient[]>`
     SELECT
-      k.nip, k.nazwa_firmy, k.email, k.telefon,
-      a.miejscowosc, a.kod_pocztowy, s.kod AS status_kod
+      k.id, k.nip, k.nazwa_firmy, k.imie, k.nazwisko, k.stanowisko,
+      k.email, k.telefon, k.created_at, s.kod AS status_kod,
+      a.id AS adres_id, a.ulica, a.numer_budynku, a.numer_lokalu,
+      a.kod_pocztowy, a.miejscowosc, a.wojewodztwo
     FROM klient k
     JOIN adres a ON k.adres_id = a.id
     JOIN status_klienta s ON k.status_klienta_id = s.id
@@ -27,11 +28,11 @@ export function getAllClients(): Promise<DbClientSummaryRow[]> {
 /**
  * Pobierz klienta po jego ID
  * @param {number} id - ID klienta
- * @returns {Promise<DbClientDetails>} - surowe dane klienta z bazy
+ * @returns {Promise<DbClient>} - surowe dane klienta z bazy
  * @throws {ClientNotFoundError} - jeśli klient nie istnieje
  */
-export async function getClientById(id: number): Promise<DbClientDetails> {
-  const raw = await sql<DbClientDetails[]>`
+export async function getClientById(id: number): Promise<DbClient> {
+  const raw = await sql<DbClient[]>`
     SELECT
       k.id, k.nip, k.nazwa_firmy, k.imie, k.nazwisko, k.stanowisko,
       k.email, k.telefon, k.created_at, s.kod AS status_kod,
