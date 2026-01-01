@@ -1,22 +1,9 @@
 // Typy reprezentujące surowe dane bezpośrednio z bazy danych (snake_case)
 
 /**
- * Surowe dane klienta z listy (getAllClients) - uproszczona struktura
+ * Pełne surowe dane klienta z bazy
  */
-export type DbClientSummaryRow = {
-  nip: string;
-  nazwa_firmy: string;
-  email: string;
-  telefon: string;
-  miejscowosc: string;
-  kod_pocztowy: string;
-  status_kod: string;
-};
-
-/**
- * Pełne surowe dane klienta z bazy (getClientById)
- */
-export type DbClientDetails = {
+export type DbClient = {
   id: number;
   nip: string;
   nazwa_firmy: string;

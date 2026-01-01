@@ -3,12 +3,10 @@ import {
   createClientRequestToNewAddress as mapToNewAddress,
   createClientRequestToNewClient as mapToNewClient,
   dbClientDetailsToClient,
-  dbClientToClientSummary,
 } from "../mappers/clientMapper.ts";
 
 import {
   Client,
-  ClientSummary,
   CreateClient,
   NewAddress,
   NewClient,
@@ -22,11 +20,11 @@ import {
 
 /**
  * Pobierz listę wszystkich klientów
- * @returns {Promise<ClientSummary[]>} - lista wszystkich klientów
+ * @returns {Promise<Client[]>} - lista wszystkich klientów
  */
-export async function listClients(): Promise<ClientSummary[]> {
+export async function listClients(): Promise<Client[]> {
   const dbClients = await clientRepo.getAllClients();
-  return dbClients.map(dbClientToClientSummary);
+  return dbClients.map(dbClientDetailsToClient);
 }
 
 /**

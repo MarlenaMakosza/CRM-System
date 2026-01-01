@@ -1,19 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
-  import { type ClientSummary } from "../../lib/types/domain";
+  import { type Client } from "../../lib/types/domain";
+  import { fetchClients } from "../../lib/api/client";
 
-  let clients = $state<ClientSummary[]>([]);
+  let clients = $state<Client[]>([]);
   let loading = $state(true);
   let error = $state("");
 
   onMount(async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/clients");
-      if (!response.ok) {
-        throw new Error(`Błąd: ${response.statusText}`);
-      }
-      clients = await response.json();
+      clients = await fetchClients();
     } catch (err) {
       error = err instanceof Error ? err.message : "Nieznany błąd";
     } finally {
@@ -38,10 +35,10 @@
       {#each clients as client}
         <div
           class="client-card"
-          onclick={() => openClient(client.id)}
+          onclick={() => openClient(client.client_metadata.id)}
           role="button"
           tabindex="0"
-          onkeydown={(e) => e.key === "Enter" && openClient(client.id)}
+          onkeydown={(e) => e.key === "Enter" && openClient(client.client_metadata.id)}
         >
           <h3>{client.company_data.nazwa_firmy}</h3>
           <p><strong>NIP:</strong> {client.company_data.nip}</p>
@@ -49,8 +46,8 @@
             <strong>Miejscowość:</strong>
             {client.adres.miejscowosc} ({client.adres.kod_pocztowy})
           </p>
-          <p><strong>Email:</strong> {client.contact_data.email}</p>
-          <p><strong>Telefon:</strong> {client.contact_data.telefon}</p>
+          <p><strong>Email:</strong> {client.contact_person.contact_data.email}</p>
+          <p><strong>Telefon:</strong> {client.contact_person.contact_data.telefon}</p>
           <p><strong>Status:</strong> {client.status_kod}</p>
         </div>
       {/each}

@@ -5,10 +5,8 @@
 // Domain - Clients
 export type {
   Address,
-  AddressSummary,
   Client,
   ClientMetadata,
-  ClientSummary,
   CompanyData,
   ContactData,
   ContactPerson,
@@ -28,8 +26,7 @@ export type {
 
 // Database
 export type {
-  DbClientDetails,
-  DbClientSummaryRow as DbClientSummaryRow,
+  DbClient,
   NewAddress,
   NewClient,
   DbPrzedstawiciel,
