@@ -1,5 +1,6 @@
 import { sql } from "db";
 import { DbEvent, DbUpsertEvent } from "../types/database.ts";
+import { EventNotFoundError } from "../utils/errorHandler.ts";
 
 /**
  * Pobierz listę wszystkich wydarzeń (pełne dane)
@@ -64,7 +65,7 @@ export async function getEventById(id: number): Promise<DbEvent> {
   `;
 
   if (events.length === 0) {
-    throw new Error(`Event with id=${id} not found`);
+    throw new EventNotFoundError(id);
   }
 
   return events[0];
