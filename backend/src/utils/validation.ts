@@ -1,4 +1,4 @@
-import { CreateClient, UpdateClient } from "../types/index.ts";
+import { UpsertClient } from "../types/index.ts";
 import { checkNipExists, getStatusId } from "../repository/clientRepository.ts";
 
 // ============================================================================
@@ -45,8 +45,8 @@ export function validateId(id: number): void {
  * Główna funkcja walidacji dla tworzenia nowego klienta
  * @throws {ValidationError} gdy dane są niepoprawne
  */
-export async function validateCreateClient(
-  data: CreateClient,
+export async function validateUpsertClient(
+  data: UpsertClient,
 ): Promise<void> {
   validateRequiredFields(data);
   validateNipFormat(data.company_data.nip);
@@ -57,10 +57,10 @@ export async function validateCreateClient(
 }
 
 /**
- * Sprawdź czy wszystkie wymagane pola są wypełnione
+ * Sprawdź, czy wszystkie wymagane pola są wypełnione
  * Dla zagnieżdżonej struktury CreateClientRequest
  */
-function validateRequiredFields(data: CreateClient): void {
+function validateRequiredFields(data: UpsertClient): void {
   // Sprawdź główne obiekty
   if (!data.contact_person || !data.company_data || !data.adres || !data.status_kod) {
     throw new ValidationError("Missing required top-level fields");
@@ -156,9 +156,8 @@ async function validateStatusExists(status_kod: string): Promise<void> {
  * @throws {ValidationError} gdy dane są niepoprawne
  */
 export async function validateUpdateClient(
-  data: UpdateClient,
+  data: UpsertClient,
   currentNip: string,
-  clientId: number,
 ): Promise<void> {
   // Sprawdź czy NIP nie został zmieniony (nie można zmienić NIP)
   // NIP jest immutable - jeśli podano i jest inny niż obecny, odrzuć
