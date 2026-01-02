@@ -120,6 +120,72 @@ export async function fetchEvents(): Promise<any[]> {
 }
 
 /**
+ * fetchEventById - pobierz pojedyncze wydarzenie (z autoryzacją)
+ */
+export async function fetchEventById(id: string | number): Promise<any> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/events/${id}`);
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new ApiError(response.status, response.statusText, "Wydarzenie nie zostało znalezione");
+    }
+    throw new ApiError(
+      response.status,
+      response.statusText,
+      "Nie udało się pobrać wydarzenia",
+    );
+  }
+
+  return await response.json();
+}
+
+/**
+ * createEvent - utwórz nowe wydarzenie (z autoryzacją)
+ */
+export async function createEvent(eventData: any): Promise<any> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/events`, {
+    method: "POST",
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({
+      error: "Błąd tworzenia wydarzenia",
+    }));
+    throw new ApiError(
+      response.status,
+      response.statusText,
+      errorData.error || "Nie udało się utworzyć wydarzenia",
+    );
+  }
+
+  return await response.json();
+}
+
+/**
+ * updateEvent - zaktualizuj wydarzenie (z autoryzacją)
+ */
+export async function updateEvent(id: string | number, eventData: any): Promise<any> {
+  const response = await fetchWithAuth(`${API_BASE_URL}/events/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({
+      error: "Błąd aktualizacji wydarzenia",
+    }));
+    throw new ApiError(
+      response.status,
+      response.statusText,
+      errorData.error || "Nie udało się zaktualizować wydarzenia",
+    );
+  }
+
+  return await response.json();
+}
+
+/**
  * fetchClients - pobierz klientów (z autoryzacją)
  */
 export async function fetchClients(): Promise<any[]> {
