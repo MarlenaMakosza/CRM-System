@@ -38,12 +38,31 @@ export type {
 // Database
 export type {
   DbClient,
+  DbContract,
+  DbContractItem,
   DbEvent,
   DbPrzedstawiciel,
   DbUpsertAddress,
   DbUpsertClient,
+  DbUpsertContract,
+  DbUpsertContractItem,
   DbUpsertEvent,
 } from "./database.ts";
 
 // Errors
 export type { ErrorResponse } from "./errors.ts";
+
+// Domain - Contracts
+export type {
+  Contract,
+  ContractDetails,
+  ContractItem,
+  ContractMetadata,
+  ContractRelations,
+  JednostkaIlosci,
+  Product,
+  StatusUmowy,
+  TypUmowy,
+  UpsertContract,
+  UpsertContractItem,
+} from "./contracts.ts";

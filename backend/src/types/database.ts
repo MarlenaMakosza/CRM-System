@@ -92,3 +92,58 @@ export type DbUpsertEvent = {
   opis: string;
   notatki: string;
 };
+
+/**
+ * Pełne surowe dane umowy z bazy (po JOIN z typ_umowy)
+ */
+export type DbContract = {
+  id: number;
+  klient_id: number;
+  przedstawiciel_id: number;
+  typ_id: number;
+  typ_nazwa: string; // JOIN z typ_umowy
+  status: string;
+  data_od: string; // ISO string (DATE)
+  data_do: string; // ISO string (DATE), pusty jeśli NULL
+  created_at: string; // ISO string (TIMESTAMP)
+  wartosc_umowy: number; // NUMERIC(14,2)
+};
+
+/**
+ * Typ dla wstawiania nowej umowy do bazy (bez id i created_at)
+ */
+export type DbUpsertContract = {
+  klient_id: number;
+  przedstawiciel_id: number;
+  typ_id: number; // FK do typ_umowy
+  status: string;
+  data_od: string; // ISO string (DATE)
+  data_do: string; // ISO string (DATE), pusty jeśli NULL w bazie
+  wartosc_umowy: number; // NUMERIC(14,2)
+};
+
+/**
+ * Pełne surowe dane pozycji umowy z bazy (po JOIN z produkt)
+ */
+export type DbContractItem = {
+  id: number;
+  umowa_id: number;
+  produkt_id: number;
+  nazwa_produktu: string; // JOIN z produkt
+  opis_produktu: string; // JOIN z produkt
+  ilosc: number; // NUMERIC(10,2)
+  jednostka: string;
+  cena_jednostkowa: number; // NUMERIC(12,2)
+  wartosc: number; // NUMERIC(14,2) - GENERATED column
+};
+
+/**
+ * Typ dla wstawiania nowej pozycji umowy do bazy (bez id i wartosc - bo GENERATED)
+ */
+export type DbUpsertContractItem = {
+  umowa_id: number; // FK do umowa
+  produkt_id: number; // FK do produkt
+  ilosc: number;
+  jednostka: string;
+  cena_jednostkowa: number;
+};
