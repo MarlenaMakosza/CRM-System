@@ -4,7 +4,8 @@
 
 import type {LoginRequest, LoginResponse} from "../types/auth";
 
-const API_BASE_URL = "http://localhost:8080/api";
+// W produkcji (Docker) używamy /api (nginx proxy), w dev używamy localhost:8080
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 /**
  * ApiError - niestandardowy błąd API
@@ -165,7 +166,7 @@ export async function createEvent(eventData: any): Promise<any> {
  */
 export async function updateEvent(id: string | number, eventData: any): Promise<any> {
   const response = await fetchWithAuth(`${API_BASE_URL}/events/${id}`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(eventData),
   });
 

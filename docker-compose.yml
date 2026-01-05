@@ -1,13 +1,48 @@
 services:
   db:
-    image: postgres
+    image: postgres:16-alpine
     restart: always
     ports:
       - 5432:5432
     env_file: ".env"
+    environment:
+      - TZ=Europe/Warsaw
     volumes:
-      - db_data:/var/lib/postgresql
+      - db_data:/var/lib/postgresql/data
       # inicjalizacja schematu przy pierwszym starcie
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    env_file: ".env"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - TZ=Europe/Warsaw
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+
 volumes:
   db_data:
