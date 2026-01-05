@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { authStore } from "$lib/stores/auth";
+  import "$lib/styles/global.css";
 
   let { children } = $props();
 
@@ -61,6 +62,24 @@
             >
               Zdarzenia
             </a>
+            <a
+              href="/contracts"
+              class:active={page.url.pathname.startsWith("/contracts")}
+            >
+              Umowy
+            </a>
+            <a
+              href="/products"
+              class:active={page.url.pathname.startsWith("/products")}
+            >
+              Produkty
+            </a>
+            <a
+              href="/reports"
+              class:active={page.url.pathname.startsWith("/reports")}
+            >
+              Raporty
+            </a>
           </div>
 
           <div class="user-section">
@@ -106,12 +125,6 @@
     color: #4a5568;
   }
 
-  .app-layout {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
   .navbar {
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -130,7 +143,7 @@
   .logo {
     margin: 0;
     font-size: 1.25rem;
-    color: #2d3748;
+    color: black;
     font-weight: 700;
   }
 
@@ -144,9 +157,7 @@
     text-decoration: none;
     color: #4a5568;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
     font-weight: 500;
-    transition: all 0.2s ease;
   }
 
   .nav-links a:hover {
@@ -173,20 +184,18 @@
 
   .badge {
     display: inline-block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #667eea;
     color: white;
     padding: 0.125rem 0.5rem;
-    border-radius: 12px;
     font-size: 0.75rem;
     margin-left: 0.5rem;
   }
 
   .logout-button {
     padding: 0.5rem 1rem;
-    background-color: #e53e3e;
+    background-color: red;
     color: white;
     border: none;
-    border-radius: 6px;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
@@ -195,9 +204,5 @@
 
   .logout-button:hover {
     background-color: #c53030;
-  }
-
-  .main-content {
-    flex: 1;
   }
 </style>
