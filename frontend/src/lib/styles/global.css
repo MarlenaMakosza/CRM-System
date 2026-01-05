@@ -1,0 +1,560 @@
+/* ============================================================================
+   GLOBAL STYLES - Wspólne style dla całej aplikacji
+   ============================================================================ */
+
+/* --- LAYOUT --- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* --- HEADER --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.section h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c5282;
+  font-size: 1.2rem;
+}
+
+.header-section, .header-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-section h2 {
+  margin-bottom: 0;
+}
+
+
+/* --- BUTTONS --- */
+.btn-primary,
+.button-primary,
+.add-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.btn-primary:hover:not(:disabled),
+.button-primary:hover:not(:disabled),
+.add-button:hover {
+  background: #5568d3;
+}
+
+.btn-primary:disabled,
+.button-primary:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+}
+
+.button-secondary,
+.cancel-button,
+.back-button {
+  background: #4a5568;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.button-secondary:hover,
+.cancel-button:hover,
+.back-button:hover {
+  background: #2d3748;
+}
+
+.edit-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.edit-button:hover {
+  background: #5568d3;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+/* --- ERROR MESSAGES --- */
+.error,
+.error-message {
+  background: #fee;
+  color: #c53030;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #e53e3e;
+}
+
+/* --- INFO BOX --- */
+.info-box {
+  background: #e6f7ff;
+  border-left: 4px solid #1890ff;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+}
+
+.info-box p {
+  margin: 0;
+  color: #0050b3;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* --- NO DATA MESSAGES --- */
+.no-data,
+.no-items,
+.no-events {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-style: italic;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+/* --- FORMS --- */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.required {
+  color: #e53e3e;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="password"],
+.form-group input[type="datetime-local"],
+.form-group select,
+.form-group textarea
+{
+  width: 95%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e0;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #718096;
+  font-size: 0.85rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c5282;
+  font-size: 1.1rem;
+}
+
+.event-form,
+.client-form,
+.contract-form,
+.product-form
+{
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- TABLES --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  background: #f7fafc;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+tbody tr {
+  transition: background 0.2s;
+}
+
+tbody tr:hover {
+  background: #f7fafc;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- CARDS --- */
+.card,
+.details-card,
+.form-card {
+  border: 1px solid #ddd;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- BADGES --- */
+.badge {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Status badges dla umów */
+.status-aktywna {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.status-zakonczono {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.status-anulowano {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+.status-wstrzymano {
+  background: #feebc8;
+  color: #7c2d12;
+}
+
+/* Status badges dla zdarzeń */
+.status-planned {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-completed {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.status-cancelled {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+/* --- INFO GRID --- */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.value {
+  color: #333;
+  font-size: 1rem;
+}
+
+.value-link {
+  font-size: 1rem;
+  color: #2c5282;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.value-link:hover {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.value-money {
+  color: #2c5282;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* --- LOADING --- */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* --- UTILITY --- */
+.muted {
+  color: #999;
+  font-style: italic;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+
+/* --- CONTRACTS  --- */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.add-item-button {
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.add-item-button:hover {
+  background: #38a169;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.item-row {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.item-number {
+  font-weight: 700;
+  color: #2c5282;
+  padding-top: 1.75rem;
+  min-width: 30px;
+}
+
+.item-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  flex: 1;
+}
+
+.field label,
+.total-label-text {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.field input.readonly-field,
+.form-group input[readonly] {
+  background-color: #f7fafc;
+  color: #4a5568;
+  cursor: not-allowed;
+}
+
+.field-total {
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.total-value {
+  color: #2c5282;
+  font-weight: 700;
+  padding: 0.5rem 0;
+}
+
+.remove-button {
+  background: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1.75rem;
+}
+
+.remove-button:hover {
+  background: #e53e3e;
+}
+
+.total-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #edf2f7;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+.total-amount {
+  font-weight: 700;
+  color: #2c5282;
+  font-size: 1.5rem;
+}
+
+/* CLIENTS */
+
+.section {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h2 {
+  margin-top: 0;
+  color: #2c5282;
+  font-size: 1.2rem;
+}
+
+.client-id {
+  font-weight: 700;
+  color: #2c5282;
+  font-size: 1.1rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  background: #e6f7ff;
+  color: #0066cc;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: red;
+  padding: 1rem;
+  background: #fee;
+}
