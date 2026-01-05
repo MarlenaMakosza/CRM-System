@@ -426,6 +426,14 @@
     margin-bottom: 0;
   }
 
+  .form-row .info-box {
+    flex: 1;
+    min-width: 150px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+  }
+
   /* Karty statystyk */
   .stats-grid {
     display: grid;
