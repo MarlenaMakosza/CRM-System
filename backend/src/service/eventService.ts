@@ -4,7 +4,6 @@ import {
   mapDbEventToEvent,
 } from "../mappers/eventMapper.ts";
 import {
-  DbUpsertEvent,
   Event, UpsertEvent,
 } from "../types/index.ts";
 import { validateId, ValidationError } from "../utils/clientValidation.ts";
@@ -17,7 +16,6 @@ import {
  * @param {number} [przedstawicielId] - opcjonalny filtr po ID przedstawiciela (dla pracowników)
  * @returns {Promise<Event[]>} - lista wszystkich wydarzeń
  */
-//TODO Niech backend filtruje po przedstawicielu, które wydarzenia ma przekazać
 export async function listEvents(przedstawicielId?: number): Promise<Event[]> {
   const dbEvents = await eventRepo.getAllEvents(przedstawicielId);
   return dbEvents.map(mapDbEventToEvent);
@@ -114,10 +112,5 @@ export async function updateEvent(
  */
 export async function deleteEvent(id: number): Promise<void> {
   validateId(id);
-
-  // Sprawdź, czy istnieje
-  await eventRepo.getEventById(id);
-
-  // Usuń
   await eventRepo.deleteEvent(id);
 }

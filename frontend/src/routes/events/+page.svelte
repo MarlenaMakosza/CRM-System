@@ -25,6 +25,8 @@
   function formatDate(dateStr: string): string {
     if (!dateStr) return "Brak daty";
     const date = new Date(dateStr);
+    // Korekta strefy czasowej (+1 godzina)
+    date.setHours(date.getHours() + 1);
     return date.toLocaleDateString("pl-PL", {
       year: "numeric",
       month: "long",
@@ -119,77 +121,29 @@
 </div>
 
 <style>
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  h1 {
-    color: #333;
-    margin: 0;
-  }
-
-  .add-button {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .add-button:hover {
-    background: #5568d3;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-  }
-
-  .add-button:active {
-    transform: translateY(0);
-  }
-
+  /* Style specyficzne dla listy wydarzeń */
   .events-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 15px;
   }
 
   .event-card {
     border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1.5rem;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    background: white;
     cursor: pointer;
-    transition: all 0.2s ease;
   }
 
   .event-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-    border-color: #2c5282;
-  }
-
-  .event-card:active {
-    transform: translateY(0);
+    border-color: #667eea;
   }
 
   .event-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
   }
 
   .event-header h3 {
@@ -197,72 +151,34 @@
     color: #2c5282;
   }
 
-  .status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .status-planned {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-
-  .status-completed {
-    background-color: #e8f5e9;
-    color: #388e3c;
-  }
-
-  .status-cancelled {
-    background-color: #ffebee;
-    color: #d32f2f;
-  }
-
   .event-description {
-    margin: 0.5rem 0 1rem 0;
-    color: #555;
-    font-size: 0.95rem;
-    line-height: 1.4;
+    margin: 10px 0;
+    color: #666;
+    font-size: 14px;
   }
 
   .event-meta {
-    margin: 1rem 0;
-    padding: 0.75rem;
+    margin: 10px 0;
+    padding: 10px;
     background: #f5f5f5;
-    border-radius: 4px;
   }
 
   .event-meta p {
-    margin: 0.25rem 0;
-    font-size: 0.85rem;
-  }
-
-  .event-dates {
-    margin: 1rem 0 0.5rem 0;
+    margin: 5px 0;
+    font-size: 13px;
   }
 
   .event-dates p {
-    margin: 0.25rem 0;
-    font-size: 0.85rem;
+    margin: 5px 0;
+    font-size: 13px;
     color: #666;
   }
 
   .event-notes {
-    margin-top: 0.75rem;
-    padding: 0.5rem;
-    background: #fff9e6;
-    border-left: 3px solid #ffc107;
-    border-radius: 4px;
-    font-size: 0.85rem;
+    margin-top: 10px;
+    padding: 10px;
+    background: #fffacd;
+    font-size: 13px;
     color: #666;
-  }
-
-  .error {
-    color: red;
-    padding: 1rem;
-    background: #fee;
-    border-radius: 4px;
   }
 </style>

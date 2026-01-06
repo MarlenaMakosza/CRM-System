@@ -17,6 +17,36 @@ export class ClientNotFoundError extends Error {
 }
 
 /**
+ * Błąd gdy wydarzenie nie zostało znalezione w bazie
+ */
+export class EventNotFoundError extends Error {
+  constructor(public eventId: number) {
+    super(`Event with id=${eventId} not found`);
+    this.name = "EventNotFoundError";
+  }
+}
+
+/**
+ * Błąd gdy umowa nie została znaleziona w bazie
+ */
+export class ContractNotFoundError extends Error {
+  constructor(public contractId: number) {
+    super(`Contract with id=${contractId} not found`);
+    this.name = "ContractNotFoundError";
+  }
+}
+
+/**
+ * Błąd gdy produkt nie został znaleziony w bazie
+ */
+export class ProductNotFoundError extends Error {
+  constructor(public productId: number) {
+    super(`Product with id=${productId} not found`);
+    this.name = "ProductNotFoundError";
+  }
+}
+
+/**
  * Błąd bazy danych - używany gdy PostgreSQL zwraca błąd
  */
 export class DatabaseError extends Error {
@@ -57,6 +87,33 @@ export function handleError(ctx: Context, error: unknown): void {
     ctx.response.status = 404;
     ctx.response.body = {
       error: `Client with id: ${error.clientId} does not exist`,
+    } satisfies ErrorResponse;
+    return;
+  }
+
+  // 404 - Event nie istnieje
+  if (error instanceof EventNotFoundError) {
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: `Event with id: ${error.eventId} does not exist`,
+    } satisfies ErrorResponse;
+    return;
+  }
+
+  // 404 - Contract nie istnieje
+  if (error instanceof ContractNotFoundError) {
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: `Contract with id: ${error.contractId} does not exist`,
+    } satisfies ErrorResponse;
+    return;
+  }
+
+  // 404 - Product nie istnieje
+  if (error instanceof ProductNotFoundError) {
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: `Product with id: ${error.productId} does not exist`,
     } satisfies ErrorResponse;
     return;
   }

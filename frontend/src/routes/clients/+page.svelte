@@ -21,10 +21,34 @@
   function openClient(clientId: number) {
     goto(`/clients/${clientId}`);
   }
+
+  function goToNewClient() {
+    goto("/clients/new");
+  }
+
+  function getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case "PROSPEKT":
+        return "status-prospekt";
+      case "W TRAKCIE":
+        return "status-w-trakcie";
+      case "AKTYWNY":
+        return "status-aktywny";
+      case "NIEAKTYWNY":
+        return "status-nieaktywny";
+      case "VIP":
+        return "status-vip";
+      default:
+        return "";
+    }
+  }
 </script>
 
 <div class="container">
-  <h1>Lista Klientów CRM</h1>
+  <div class="header">
+    <h1>Lista Klientów CRM</h1>
+    <button class="add-button" onclick={goToNewClient}>+ Dodaj klienta</button>
+  </div>
 
   {#if loading}
     <p>Ładowanie...</p>
@@ -48,7 +72,7 @@
           </p>
           <p><strong>Email:</strong> {client.contact_person.contact_data.email}</p>
           <p><strong>Telefon:</strong> {client.contact_person.contact_data.telefon}</p>
-          <p><strong>Status:</strong> {client.status_kod}</p>
+          <p><strong>Status:</strong> <span class="status-badge {getStatusBadgeClass(client.status_kod)}">{client.status_kod}</span></p>
         </div>
       {/each}
     </div>
@@ -56,41 +80,22 @@
 </div>
 
 <style>
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  h1 {
-    color: #333;
-    margin-bottom: 2rem;
-  }
-
+  /* Style specyficzne dla listy klientów */
   .clients-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 15px;
   }
 
   .client-card {
     border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1.5rem;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    background: white;
     cursor: pointer;
-    transition: all 0.2s ease;
   }
 
   .client-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-    border-color: #2c5282;
-  }
-
-  .client-card:active {
-    transform: translateY(0);
+    border-color: #667eea;
   }
 
   .client-card h3 {
@@ -99,14 +104,7 @@
   }
 
   .client-card p {
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
-  }
-
-  .error {
-    color: red;
-    padding: 1rem;
-    background: #fee;
-    border-radius: 4px;
+    margin: 5px 0;
+    font-size: 14px;
   }
 </style>

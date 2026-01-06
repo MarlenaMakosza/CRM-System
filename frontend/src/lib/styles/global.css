@@ -1,0 +1,472 @@
+/* ============================================
+   GLOBAL CSS - Aplikacja CRM
+   ============================================ */
+
+/* === LAYOUT === */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header,
+.header-section,
+.header-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header-buttons {
+  gap: 10px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #333;
+}
+
+h2 {
+  color: #2c5282;
+  margin-top: 0;
+}
+
+.section h2 {
+  margin-bottom: 15px;
+}
+
+/* === PRZYCISKI === */
+button {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Przyciski główne (niebieski) */
+.btn-primary,
+.button-primary,
+.add-button,
+.edit-button {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover,
+.button-primary:hover,
+.add-button:hover,
+.edit-button:hover {
+  background: #5568d3;
+}
+
+.btn-primary:disabled,
+.button-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Przyciski drugorzędne (szary) */
+.button-secondary,
+.cancel-button,
+.back-button {
+  background: #666;
+  color: white;
+}
+
+.button-secondary:hover,
+.cancel-button:hover,
+.back-button:hover {
+  background: #555;
+}
+
+/* Przyciski usuwania (czerwony) */
+.delete-button,
+.remove-button {
+  background: #e53e3e;
+  color: white;
+}
+
+.delete-button:hover,
+.remove-button:hover {
+  background: #c53030;
+}
+
+/* Przycisk dodawania pozycji (zielony) */
+.add-item-button {
+  background: #48bb78;
+  color: white;
+}
+
+.add-item-button:hover {
+  background: #38a169;
+}
+
+/* === KOMUNIKATY === */
+.error,
+.error-message {
+  background: #ffeeee;
+  color: #cc0000;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #cc0000;
+}
+
+.info-box {
+  background: #e6f7ff;
+  border-left: 4px solid #1890ff;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.info-box p {
+  margin: 0;
+  color: #0050b3;
+}
+
+.warning-box {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  padding: 15px;
+  margin-bottom: 15px;
+  color: #78350f;
+}
+
+.no-data,
+.no-items,
+.no-events,
+.loading {
+  text-align: center;
+  color: #666;
+  padding: 30px;
+  background: #f5f5f5;
+}
+
+/* === FORMULARZE === */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.required {
+  color: red;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input[readonly],
+.field input.readonly-field {
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.event-form,
+.client-form,
+.contract-form,
+.product-form,
+.form-card {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 20px;
+}
+
+/* === TABELE === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #f5f5f5;
+  color: #333;
+  font-weight: bold;
+}
+
+tbody tr:hover {
+  background: #f9f9f9;
+}
+
+/* === KARTY === */
+.card,
+.details-card,
+.info-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  background: white;
+}
+
+.info-card h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.info-card p {
+  margin: 8px 0;
+  color: #666;
+}
+
+/* Quick links - strona główna */
+.quick-link {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 30px;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+}
+
+.quick-link:hover {
+  border-color: #667eea;
+  background: #f9f9f9;
+}
+
+.quick-link h3 {
+  color: #333;
+  margin: 8px 0;
+}
+
+.quick-link p {
+  color: #666;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* === STATUSY (bazowe) === */
+.badge,
+.status-badge,
+[class^="status-"] {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+}
+
+/* Statusy klientów */
+.status-prospekt { background: #2196f3; }
+.status-w-trakcie { background: #ff9800; }
+.status-aktywny { background: #4caf50; }
+.status-nieaktywny { background: #607d8b; }
+.status-vip { background: #9c27b0; }
+
+/* Statusy umów */
+.status-aktywna { background: #4caf50; }
+.status-zakonczono { background: #607d8b; }
+.status-anulowano { background: #f44336; }
+.status-wstrzymano { background: #ff9800; }
+
+/* Statusy wydarzeń */
+.status-planned { background: #2196f3; }
+.status-completed { background: #4caf50; }
+.status-cancelled { background: #f44336; }
+
+/* === INFO GRID === */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  color: #666;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.value {
+  color: #333;
+  font-size: 16px;
+}
+
+.value-link {
+  color: #2c5282;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.value-link:hover {
+  color: #667eea;
+  text-decoration: underline;
+}
+
+.value-money,
+.client-id {
+  color: #2c5282;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* === SEKCJE === */
+.section {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+/* === POZYCJE UMÓW === */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.item-row {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+}
+
+.item-number {
+  font-weight: bold;
+  color: #2c5282;
+  padding-top: 30px;
+  min-width: 30px;
+}
+
+.item-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  flex: 1;
+}
+
+.field label,
+.total-label-text {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+.field-total {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.total-value {
+  color: #2c5282;
+  font-weight: bold;
+  padding: 8px 0;
+}
+
+.total-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-label {
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+}
+
+.total-amount {
+  font-weight: bold;
+  color: #2c5282;
+  font-size: 24px;
+}
+
+/* === UTILITIES === */
+.muted {
+  color: #999;
+}
+
+.text-center {
+  text-align: center;
+}
