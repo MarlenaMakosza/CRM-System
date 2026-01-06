@@ -12,6 +12,20 @@ System CRM do zarządzania klientami, umowami i wydarzeniami dla przedstawicieli
 cp .env.example .env
 ```
 
+1a.
+Być może trzeba będzie zainstalować ręcznei zależności.
+W tym folderze w konsoli wpisać
+
+```shell
+deno install
+```
+
+Wejść do folderu /frontend i tam wpisać
+
+```shell
+npm install
+```
+
 2. Uruchom cały system:
 ```shell
 docker compose up -d --build
