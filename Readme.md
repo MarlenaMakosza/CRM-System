@@ -7,31 +7,30 @@ System CRM do zarządzania klientami, umowami i wydarzeniami dla przedstawicieli
 
 ## Szybki start (Docker)
 
-1. Skopiuj plik `.env.example` na `.env`:
+1. Skopiować plik `.env.example` na `.env`:
 ```shell
 cp .env.example .env
 ```
 
-1a.
-Być może trzeba będzie zainstalować ręcznei zależności.
-W tym folderze w konsoli wpisać
+2. Uruchomić cały system:
+```shell
+docker compose up -d --build
+```
+
+2a. W przypadku problemów może być konieczne ręczne zainstalowanie zależności.
+W głównym folderze projektu wykonać:
 
 ```shell
 deno install
 ```
 
-Wejść do folderu /frontend i tam wpisać
+Następnie przejść do folderu `/frontend` i wykonać:
 
 ```shell
 npm install
 ```
 
-2. Uruchom cały system:
-```shell
-docker compose up -d --build
-```
-
-3. Otwórz przeglądarkę:
+3. Otworzyć przeglądarkę:
    - **Frontend**: http://localhost
    - **Backend API**: http://localhost:8080/api
 
@@ -46,6 +45,7 @@ docker compose up -d --build
 
 ## Zatrzymanie systemu
 
+Aby zatrzymać system:
 ```shell
 docker compose down
 ```
@@ -59,10 +59,10 @@ docker compose down -v
 
 ### Backend (Deno)
 ```shell
-# Uruchom tylko bazę danych
+# Uruchomić tylko bazę danych
 docker compose up db -d
 
-# Uruchom backend w trybie dev
+# Uruchomić backend w trybie dev
 deno task dev
 ```
 
